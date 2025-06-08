@@ -1,3 +1,4 @@
+
 // === 해시 제거 (새로고침 시 강제 1페이지) ===
 window.history.replaceState(null, null, window.location.pathname);
 
