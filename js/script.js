@@ -26,6 +26,8 @@ window.addEventListener("load", function () {
                 setTimeout(() => {
                     document.body.classList.remove("loading");
 
+                    triggerPhysicsLanding();
+
                     // 풀페이지 다시 스크롤 허용
                     fullpage_api.setAllowScrolling(true);
                     fullpage_api.setKeyboardScrolling(true);
