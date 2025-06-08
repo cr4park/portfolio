@@ -1,0 +1,917 @@
+/* === import === */
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR:100,300,400,500,700,900|Pacifico');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+@font-face {
+    font-family: 'DungGeunMo';
+    font-weight: normal;
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+    font-style: normal;
+}
+
+/* === reset === */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100%;
+    font-family: 'DungGeunMo', sans-serif;
+    font-size: 16px;
+    color: #fff;
+    line-height: 1;
+    background: #000;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+    border: none;
+    background: none;
+    outline: none;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* === common === */
+.hidden {
+    visibility: hidden;
+}
+
+h1 {
+    margin-top: 20px;
+    font-family: 'Press Start 2P';
+    font-size: clamp(100px, 5vw, 100px);
+    color: #00f0b5;
+    text-shadow:
+        0 0 2px #00f0b5,
+        0 0 5px #00f0b5,
+        0 0 10px #00f0b5,
+        0 0 15px #00f0b5;
+}
+
+h2 {
+    font-family: 'Press Start 2P';
+    font-size: 24px;
+    text-align: center;
+    color: #00f0b5;
+    text-shadow:
+        0 0 2px #00f0b5,
+        0 0 5px #00f0b5,
+        0 0 10px #00f0b5,
+        0 0 15px #00f0b5;
+}
+
+.wrapper {
+    min-width: 960px;
+}
+
+.section {
+    position: relative;
+}
+
+.section .inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    margin: 0 auto;
+    max-width: 960px;
+}
+
+.retro-background::after {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background-image: url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.15;
+    content: "";
+    pointer-events: none;
+    mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+}
+
+.terminal-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    padding: 0 20px;
+    font-family: 'Press Start 2P';
+    font-size: 12px;
+    color: #00f0b5;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #333;
+    background: #0a0a0a;
+}
+
+.scroll-indicator {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    z-index: 999;
+    font-family: 'Press Start 2P';
+    color: #00f0b5;
+}
+
+.scroll-indicator .arrow {
+    font-size: 16px;
+    animation: arrow-drop 1.2s infinite steps(1);
+}
+
+.scroll-indicator .text {
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+@keyframes arrow-drop {
+    0% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(4px);
+    }
+
+    60% {
+        transform: translateY(8px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* === navigator === */
+#fp-nav.fp-right {
+    top: 0;
+    right: 20px;
+    z-index: 1000;
+    transform: none;
+}
+
+#fp-nav ul {
+    display: flex;
+}
+
+#fp-nav ul::before,
+#fp-nav ul::after {
+    display: inline;
+    font-family: 'Press Start 2P';
+    font-size: 12px;
+    color: #00f0b5;
+    line-height: 40px;
+}
+
+#fp-nav ul::before {
+    content: '> nev [';
+}
+
+#fp-nav ul::after {
+    content: ']';
+}
+
+#fp-nav ul li {
+    width: 20px;
+    height: 30px;
+    position: relative;
+    margin: 0;
+    margin: 5px;
+    padding: 0 5px;
+    box-sizing: content-box;
+}
+
+#fp-nav ul li::before {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: 'Press Start 2P';
+    font-size: 12px;
+    text-align: center;
+    color: #00f0b5;
+    line-height: 30px;
+}
+
+#fp-nav ul li:nth-child(1)::before {
+    content: '1';
+}
+
+#fp-nav ul li:nth-child(2)::before {
+    content: '2';
+}
+
+#fp-nav ul li:nth-child(3)::before {
+    content: '3';
+}
+
+#fp-nav ul li:nth-child(4)::before {
+    content: '4';
+}
+
+#fp-nav ul li:nth-child(5)::before {
+    content: '5';
+}
+
+#fp-nav ul li:nth-child(6)::before {
+    content: '6';
+}
+
+#fp-nav ul li a {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#fp-nav ul li a.active {
+    border: 2px solid #00f0b5;
+}
+
+#fp-nav ul li a span {
+    display: none !important;
+}
+
+.fp-watermark {
+    display: none !important;
+}
+
+/* === loading === */
+#loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background: #000;
+}
+
+.loading-text {
+    font-family: 'Press Start 2P';
+    color: #00f0b5;
+    white-space: nowrap;
+}
+
+.dot-animate::after {
+    content: '';
+    animation: dots 1s steps(3) infinite;
+}
+
+@keyframes dots {
+    0% {
+        content: '';
+    }
+
+    25% {
+        content: '.';
+    }
+
+    50% {
+        content: '..';
+    }
+
+    75% {
+        content: '...';
+    }
+}
+
+
+/* === skii === */
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+canvas {
+    display: none !important;
+}
+
+.word {
+    position: absolute;
+    z-index: 10;
+    padding: 10px 14px;
+    font-size: 20px;
+    color: #00f0b5;
+    border: 4px solid #00f0b5;
+    border-color: #00f0b5 #03796d #03796d #00f0b5;
+    background: #000;
+    border-right-width: 8px;
+    border-bottom-width: 8px;
+    /* box-shadow: 2px 2px 0 #00f0b5; */
+    cursor: pointer;
+}
+
+.word:hover {
+    transform: translate(2px, 2px) !important;
+    background: #333;
+    border-right-width: 6px;
+    border-bottom-width: 6px;
+}
+
+.word:active {
+    border-width: 4px;
+    transform: translate(4px, 4px) !important;
+}
+
+.word-active {
+    border-width: 4px;
+    transform: translate(4px, 4px) !important;
+    background: #333;
+}
+
+.word-grid {
+    position: absolute;
+    bottom: 0;
+}
+
+.particle-container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.firework-particle {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    background: #00f0b5;
+    pointer-events: none;
+}
+
+@keyframes flash {
+    to {
+        transform: scale(1.6) translate(-50%, -50%);
+        opacity: 0;
+    }
+}
+
+/* === main === */
+
+.section.main .clover {
+    animation: clover-shake 1s steps(1) infinite;
+    will-change: transform;
+}
+
+@keyframes clover-shake {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+        text-shadow: none;
+    }
+
+    20% {
+        transform: translate(-1px, 1px);
+        text-shadow: 1px 0 #00f0b5, -1px 0 #03796d;
+    }
+
+    40% {
+        transform: translate(1px, -1px);
+        text-shadow: none;
+    }
+
+    60% {
+        transform: translate(-1px, 0px);
+        text-shadow: 1px 0 #00f0b5, -1px 0 #03796d;
+    }
+
+    80% {
+        transform: translate(1px, 1px);
+        text-shadow: none;
+    }
+}
+
+.section.main .text-container {
+    margin-top: 4vw;
+    text-align: center;
+}
+
+.section.main .text {
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(56px, 2.8vw, 56px);
+    color: #00f0b5;
+    text-shadow:
+        0 0 2px #00f0b5,
+        0 0 5px #00f0b5,
+        0 0 10px #00f0b5,
+        0 0 15px #00f0b5;
+}
+
+.section.main .start-text {
+    margin-top: 40px;
+    font-size: clamp(40px, 2vw, 28px);
+    color: #fff;
+    animation: blink 1s step-start infinite;
+    animation: text-blink 1.5s step-start infinite;
+}
+
+@keyframes text-blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* === about === */
+.section.about .hello {
+    height: 2.8em;
+    position: relative;
+    overflow: hidden;
+    margin-top: 40px;
+    font-family: 'DungGeunMo';
+    font-size: 32px;
+    text-align: center;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.section.about .card-container {
+    display: flex;
+    align-items: baseline;
+    flex-direction: row;
+    margin-top: 40px;
+    gap: 40px;
+}
+
+.section.about .center-box {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    line-height: 1.6;
+}
+
+.section.about .card+.card {
+    margin-top: 20px;
+}
+
+.section.about .card .title {
+    font-size: 24px;
+    font-weight: normal;
+}
+
+.section.about .card ul {
+    margin-top: 5px;
+}
+
+.section.about .card ul+.title {
+    margin-top: 10px;
+}
+
+.section.about .card li {
+    position: relative;
+    padding-left: 30px;
+}
+
+.section.about .card li::before {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '│-';
+}
+
+.barrier-line {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: #00f0b5;
+    box-sizing: border-box;
+}
+
+.barrier-line::before {
+    left: 10px;
+}
+
+.barrier-line::after {
+    right: 10px;
+}
+
+.barrier-line .bar-text {
+    position: relative;
+    z-index: 1;
+    font-family: 'Press Start 2P';
+    font-size: 12px;
+    color: #000;
+    line-height: 40px;
+}
+
+/* === works === */
+.section.works h2 {
+    position: relative;
+    font-size: 18px;
+    letter-spacing: 5px;
+    line-height: 1.1;
+    background-image:
+        repeating-linear-gradient(to bottom,
+            rgba(0, 255, 128, 0.05) 0px,
+            rgba(0, 255, 128, 0.05) 2px,
+            transparent 2px,
+            transparent 4px),
+        repeating-linear-gradient(to right,
+            rgba(0, 255, 128, 0.05) 0px,
+            rgba(0, 255, 128, 0.05) 2px,
+            transparent 2px,
+            transparent 4px);
+    box-shadow: 0 0 60px rgba(0, 255, 128, 0.15);
+    background-blend-mode: screen;
+    animation: common-shake 1s steps(1) infinite;
+}
+
+@keyframes common-shake {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    20% {
+        transform: translate(-1px, 1px);
+    }
+
+    40% {
+        transform: translate(1px, -1px);
+    }
+
+    60% {
+        transform: translate(-1px, 0px);
+    }
+
+    80% {
+        transform: translate(1px, 1px);
+    }
+}
+
+.section.works .card-container {
+    display: flex;
+    align-items: baseline;
+    flex-direction: row;
+    margin-top: 80px;
+    gap: 40px;
+}
+
+.section.works .center-box {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    line-height: 1.6;
+}
+
+.section.works .card+.card {
+    margin-top: 20px;
+}
+
+.section.works .card .title {
+    margin-bottom: 5px;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+.section.works .card ul+.title {
+    margin-top: 10px;
+}
+
+.section.works .card li {
+    position: relative;
+    padding-left: 30px;
+}
+
+.section.works .card li::before {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '│-';
+}
+
+/* === work list === */
+.section.work-list .inner {
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: auto;
+    gap: 40px;
+    max-width: none;
+}
+
+.section.work-list .project-list {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 374px;
+    height: 100vh;
+}
+
+
+.section.work-list .border-box {
+    height: 70%;
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+    border: 2px solid #fff;
+}
+
+.section.work-list .text-container {
+    display: flex;
+    /* height: calc(30% - 20px); */
+    justify-content: flex-end;
+    flex-direction: column;
+}
+
+.section.work-list .image-container {
+    height: 60vh;
+    height: calc(100% - 76px);
+    position: relative;
+    margin: 20px 0;
+    border: 1px solid #fff;
+}
+
+.section.work-list .description.name,
+.section.work-list .description.status {
+    font-size: 18px;
+}
+
+.section.work-list .project-list-col-2 {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.section.work-list .project-list-col-2 .project-list {
+    height: calc(35% + 1em);
+    font-size: 40px;
+}
+
+.section.work-list .project-list-col-2 .project-list:nth-child(2) {
+    margin-top: 20px;
+}
+
+.section.work-list .project-list-col-2 .project-list .border-box {
+    height: 100%;
+}
+
+.section.work-list .project-list-col-2 .project-list .image-container {
+    height: calc(100% - 80px);
+}
+
+.swiper {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide {
+    background: no-repeat top center;
+    background-size: cover;
+    filter: grayscale(0.9);
+}
+
+.swiper-slide.center {
+    background-position: center;
+}
+
+.project-list:hover .swiper-slide {
+    filter: none;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    width: 40px;
+    height: 40px;
+    top: auto;
+    right: auto;
+    bottom: 0;
+    left: auto;
+    color: #00f0b5;
+    border: 4px solid #00f0b5;
+    border-color: #00f0b5 #03796d #03796d #00f0b5;
+    background: #000;
+    content: '';
+    border-right-width: 8px;
+    border-bottom-width: 8px;
+}
+
+.swiper-button-prev {
+    left: 0;
+}
+
+.swiper-button-next {
+    right: 0;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    background: #333;
+}
+
+.swiper-button-prev:after {
+    content: '←';
+}
+
+.swiper-button-next:after {
+    content: '→';
+}
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+    font-family: 'DungGeunMo';
+    font-size: 24px;
+}
+
+.swiper-button-next.swiper-button-disabled,
+.swiper-button-prev.swiper-button-disabled {
+    opacity: 0 !important;
+}
+
+.section.work-list .title {
+    height: 2em;
+    font-size: 40px;
+}
+
+.section.work-list .information {
+    margin-top: 10px;
+}
+
+.section.work-list .information li:nth-child(1) {
+    color: #00f0b5;
+}
+
+.section.work-list .information li:nth-child(n+1) {
+    margin-top: 5px;
+}
+
+.glitch-letter {
+    position: relative;
+    color: #fff;
+    animation-name: flicker;
+    animation-timing-function: steps(1, end);
+    animation-iteration-count: infinite;
+}
+
+@keyframes flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+.glitch-letter::before,
+.glitch-letter::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: attr(data-char);
+}
+
+.section.work-list .information .glitch-letter {
+    color: #00f0b5;
+}
+
+/* === review === */
+.section.review h2 {
+    font-size: clamp(56px, 2.8vw, 56px);
+}
+
+.section.review .description {
+    width: 100%;
+    height: 40px;
+    margin-top: 40px;
+    text-align: center;
+    color: #000;
+    line-height: 40px;
+    background: #00f0b5;
+}
+
+.review-container {
+    width: 100%;
+    position: relative;
+}
+
+.review-list {
+    margin-top: 10px;
+    line-height: 1.4;
+}
+
+.review-list li {
+    display: flex;
+}
+
+.review-list li:nth-child(n+2) {
+    margin-top: 5px;
+}
+
+.review-list li .log {
+    width: 30px;
+}
+
+.review-list li .text {
+    width: calc(100% - 30px);
+}
+
+.section.review .swiper-button-prev,
+.section.review .swiper-button-next {
+    top: -18px;
+    bottom: auto;
+}
+
+/* === contact === */
+.section.contact h2 {
+    animation: common-shake 1s steps(1) infinite;
+}
+
+.section.contact .text-container ul {
+    margin-top: 40px;
+    font-size: 18px;
+}
+
+.section.contact .text-container ul li:nth-child(n+2) {
+    margin-top: 10px;
+}
+
+.cursor-blink {
+    display: inline-block;
+    padding-left: 5px;
+    animation: cursor-blink 1s steps(1) infinite;
+}
+
+@keyframes cursor-blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+#typing-effect::after {
+    display: inline;
+    background: #fff;
+    content: '▍';
+}
+
+.hide-cursor::after {
+    opacity: 0 !important;
+}
