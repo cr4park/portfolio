@@ -1,4 +1,3 @@
-
 // === 해시 제거 (새로고침 시 강제 1페이지) ===
 window.history.replaceState(null, null, window.location.pathname);
 
@@ -26,13 +25,10 @@ window.addEventListener("load", function () {
                 setTimeout(() => {
                     document.body.classList.remove("loading");
 
-                    triggerPhysicsLanding();
-
                     // 풀페이지 다시 스크롤 허용
                     fullpage_api.setAllowScrolling(true);
                     fullpage_api.setKeyboardScrolling(true);
                 }, 800);
-
             }, 500);
         }, 200);
     }
