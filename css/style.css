@@ -117,8 +117,8 @@ h2 {
     z-index: -1;
     background-image: url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif');
     background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-repeat: repeat-x;
+    background-size: auto 100%;
     opacity: 0.15;
     content: "";
     pointer-events: none;
@@ -350,6 +350,7 @@ canvas {
     border-bottom-width: 8px;
     /* box-shadow: 2px 2px 0 #00f0b5; */
     cursor: pointer;
+  transform: translate(-50%, -50%);
 }
 
 .word:hover {
@@ -888,6 +889,10 @@ canvas {
 
 .section.contact .text-container ul li:nth-child(n+2) {
     margin-top: 10px;
+}
+
+.section.contact .text-container ul li .color {
+    color: #00f0b5;
 }
 
 .cursor-blink {
