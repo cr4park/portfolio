@@ -28,9 +28,9 @@ window.addEventListener("load", function () {
                     // 풀페이지 다시 스크롤 허용
                     fullpage_api.setAllowScrolling(true);
                     fullpage_api.setKeyboardScrolling(true);
-                }, 800);
+                }, 500);
             }, 500);
-        }, 200);
+        }, 500);
     }
 });
 
@@ -51,22 +51,6 @@ new fullpage('#fullpage', {
         }
     }
 });
-
-// === 메인 키입력 ===
-document.addEventListener(
-    "keydown",
-    function () {
-        // 현재 섹션이 첫 섹션일 때만 실행
-        const activeSection = document.querySelector(".fp-section.active");
-        const firstSection = document.querySelector(".fp-section:first-child");
-
-        if (activeSection === firstSection && typeof fullpage_api !== "undefined") {
-            fullpage_api.moveSectionDown();
-        }
-    }, {
-        once: true
-    }
-);
 
 // === scroll indicator ===
 const scrollIndicator = document.querySelector('.scroll-indicator');
@@ -109,7 +93,7 @@ const {
 
 const engine = Engine.create();
 const world = engine.world;
-engine.timing.timeScale = 2;
+engine.timing.timeScale = 1;
 engine.gravity.y = 1;
 
 const width = window.innerWidth;
@@ -125,12 +109,6 @@ const render = Render.create({
         background: "transparent",
     },
 });
-
-Render.run(render);
-const FIXED_TIME_STEP = 1000 / 60;
-setInterval(() => {
-  Engine.update(engine, FIXED_TIME_STEP);
-}, FIXED_TIME_STEP);
 
 // 초기 착지 바닥
 const mainSection = document.querySelector(".section.main .inner");
@@ -167,29 +145,38 @@ words.forEach((word) => {
     div.className = "word";
     div.textContent = word;
     skillBox.appendChild(div);
+    requestAnimationFrame(() => {
+        const visualHeight = div.offsetHeight; // box-shadow 아래쪽 길이만큼 추가
+        const box = Bodies.rectangle(
+            width / 2 + (Math.random() * 200 - 100),
+            -Math.random() * 300,
+            div.offsetWidth,
+            visualHeight, // 보정된 높이 사용
+            {
+                restitution: 0.8,
+                friction: 0.2,
+                density: 0.005,
+                angle: Math.random() * 0.2 - 0.1,
+            }
+        );
 
-    const visualHeight = div.offsetHeight; // box-shadow 아래쪽 길이만큼 추가
-    const box = Bodies.rectangle(
-        width / 2 + (Math.random() * 200 - 100),
-        -Math.random() * 300,
-        div.offsetWidth,
-        visualHeight, // 보정된 높이 사용
-        {
-            restitution: 0.8,
-            friction: 0.2,
-            density: 0.005,
-            angle: Math.random() * 0.2 - 0.1,
-        }
-    );
-
-    box.inertia = Infinity;
-    box.inverseInertia = 0;
-    Composite.add(world, box);
-    wordObjects.push({
-        dom: div,
-        body: box,
+        box.inertia = Infinity;
+        box.inverseInertia = 0;
+        Composite.add(world, box);
+        wordObjects.push({
+            dom: div,
+            body: box,
+        });
     });
 });
+
+Render.run(render);
+const runner = Runner.create();
+Runner.run(runner, engine);
+const FIXED_TIME_STEP = 1000 / 60;
+setInterval(() => {
+    Engine.update(engine, FIXED_TIME_STEP);
+}, FIXED_TIME_STEP);
 
 Events.on(engine, "afterUpdate", () => {
     wordObjects.forEach(({
