@@ -21,6 +21,8 @@ window.addEventListener("load", function () {
                 // 맨 위로 이동
                 fullpage_api.moveTo(1);
 
+                addClickEventsOnce();
+
                 // 로딩 끝나고 다시 허용
                 setTimeout(() => {
                     document.body.classList.remove("loading");
