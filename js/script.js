@@ -311,91 +311,77 @@ let fwInt;
     threshold: 0.4
 })).observe(document.querySelector('.section.contact'));
 
-// === Create Firework ===
 function createFirework(x, y) {
-    // Explosion center at (x,y)
-    const container = document.createElement("div");
-    container.className = "firework-container";
-    Object.assign(container.style, {
-        position: "absolute",
-        left: `${x}px`,
-        top: `${y}px`,
-        width: "0",
-        height: "0",
-        overflow: "visible",
-        pointerEvents: "none",
-        zIndex: "9999"
-    });
-    document.body.appendChild(container);
-    const particleCount = 30;
-    const colors = ["#00f0b5", "#b2fff4", "#03796d"];
-    const maxRadius = 300; // increased radius for wider spread
-    for (let i = 0; i < particleCount; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * maxRadius;
-        const dx = Math.cos(angle) * radius;
-        const dy = Math.sin(angle) * radius;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const particle = document.createElement("div");
-        particle.className = "firework-particle";
-        Object.assign(particle.style, {
-            position: "absolute",
-            left: "0px",
-            top: "0px",
-            width: "8px",
-            height: "8px",
-            display: "block",
-            background: "transparent"
-        });
-        const directions = [{
-                top: "-8px",
-                left: "0px"
-            },
-            {
-                top: "8px",
-                left: "0px"
-            },
-            {
-                top: "0px",
-                left: "-8px"
-            },
-            {
-                top: "0px",
-                left: "8px"
-            }
-        ];
-        directions.forEach(({
-            top,
-            left
-        }) => {
-            const arm = document.createElement("div");
-            Object.assign(arm.style, {
-                position: "absolute",
-                width: "8px",
-                height: "8px",
-                background: color,
-                top,
-                left
-            });
-            particle.appendChild(arm);
-        });
-        container.appendChild(particle);
-        particle.animate(
-            [{
-                    transform: "translate(0,0) scale(1)"
-                },
-                {
-                    transform: `translate(${dx}px, ${dy}px) scale(1)`
-                }
-            ], {
-                duration: 500,
-                delay: 0,
-                easing: "steps(2)",
-                fill: "forwards"
-            }
-        );
-    }
+  const container = document.createElement("div");
+  container.className = "firework-container";
+  Object.assign(container.style, {
+    position: "absolute",
+    left: `${x}px`,
+    top:  `${y}px`,
+    width:  "0",
+    height: "0",
+    overflow: "visible",
+    pointerEvents: "none",
+    zIndex: "9999"
+  });
+  document.body.appendChild(container);
 
-    // remove container after effect
-    setTimeout(() => container.remove(), 1000);
+  const particleCount = 30;
+  const colors        = ["#00f0b5", "#b2fff4", "#03796d"];
+  const maxRadius     = 300;
+
+  for (let i = 0; i < particleCount; i++) {
+    // 1) 원형 분포 계산
+    const angle  = Math.random() * Math.PI * 2;
+    const radius = Math.random() * maxRadius;
+    const dx     = Math.cos(angle) * radius;
+    const dy     = Math.sin(angle) * radius;
+    const color  = colors[Math.floor(Math.random() * colors.length)];
+
+    // 2) 파티클 + 십자팔 생성
+    const particle = document.createElement("div");
+    particle.className = "firework-particle";
+    Object.assign(particle.style, {
+      position: "absolute",
+      left: "0px",
+      top:  "0px",
+      width:  "8px",
+      height: "8px",
+      display: "block",
+      background: "transparent"
+    });
+    [[-8,0],[8,0],[0,-8],[0,8]].forEach(([ty, tx])=>{
+      const arm = document.createElement("div");
+      Object.assign(arm.style, {
+        position: "absolute",
+        width:  "8px",
+        height: "8px",
+        background: color,
+        top:    `${ty}px`,
+        left:   `${tx}px`
+      });
+      particle.appendChild(arm);
+    });
+    container.appendChild(particle);
+
+    // 3) 3단계+scale 애니메이션
+    particle.animate([
+      // 1단계: 중앙, 원크기 0.5
+      { transform: "translate(0,0) scale(0.5)", offset: 0   },
+      // 2단계: 약간 퍼짐, 원크기 1.2
+      { transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.2)`, offset: 0.3 },
+      // 3단계: 최종 퍼짐, 원크기 1.0
+      { transform: `translate(${dx}px, ${dy}px) scale(1)`, offset: 0.6 },
+      // 4단계: 살짝 축소
+      { transform: `translate(${dx}px, ${dy}px) scale(0.8)`, offset: 1   }
+    ], {
+      duration: 600 + Math.random() * 300, // 600~900ms
+      delay:    Math.random() * 150,       // 0~150ms
+      easing:   "steps(4, end)",
+      fill:     "forwards"
+    });
+  }
+
+  // 1초 뒤에 컨테이너 제거
+  setTimeout(() => container.remove(), 1000);
 }
