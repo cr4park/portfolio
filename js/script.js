@@ -21,7 +21,59 @@ window.addEventListener("load", function () {
                 // 맨 위로 이동
                 fullpage_api.moveTo(1);
 
-                addClickEventsOnce();
+                words.forEach((word) => {
+                    const div = document.createElement("div");
+                    div.className = "word";
+                    div.textContent = word;
+                    skillBox.appendChild(div);
+
+                    requestAnimationFrame(() => {
+                        const visualHeight = div.offsetHeight;
+                        const box = Bodies.rectangle(
+                            width / 2 + (Math.random() * 200 - 100),
+                            -Math.random() * 30 - 20,
+                            div.offsetWidth,
+                            visualHeight, {
+                                restitution: 0.8,
+                                friction: 0.2,
+                                density: 0.005,
+                                angle: Math.random() * 0.2 - 0.1,
+                            }
+                        );
+
+                        box.inertia = Infinity;
+                        box.inverseInertia = 0;
+                        Composite.add(world, box);
+                        wordObjects.push({
+                            dom: div,
+                            body: box,
+                        });
+
+                        if (!div.dataset.bound) {
+                            div.dataset.bound = "true";
+                            div.addEventListener("click", () => {
+                                Body.setVelocity(box, {
+                                    x: (Math.random() - 0.5) * 8,
+                                    y: -30,
+                                });
+
+                                setTimeout(() => {
+                                    const section = div.closest('.section');
+                                    const sectionRect = section.getBoundingClientRect();
+                                    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                                    const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+
+                                    const domX = sectionRect.left + box.position.x + scrollLeft;
+                                    const domY = sectionRect.top + box.position.y + scrollTop;
+
+                                    createFirework(domX, domY);
+                                    div.remove();
+                                    Composite.remove(world, box);
+                                }, 400);
+                            });
+                        }
+                    });
+                });
 
                 // 로딩 끝나고 다시 허용
                 setTimeout(() => {
@@ -141,36 +193,6 @@ const words = [
 ];
 
 const wordObjects = [];
-
-words.forEach((word) => {
-    const div = document.createElement("div");
-    div.className = "word";
-    div.textContent = word;
-    skillBox.appendChild(div);
-    requestAnimationFrame(() => {
-        const visualHeight = div.offsetHeight; // box-shadow 아래쪽 길이만큼 추가
-        const box = Bodies.rectangle(
-            width / 2 + (Math.random() * 200 - 100),
-            -Math.random() * 300,
-            div.offsetWidth,
-            visualHeight, // 보정된 높이 사용
-            {
-                restitution: 0.8,
-                friction: 0.2,
-                density: 0.005,
-                angle: Math.random() * 0.2 - 0.1,
-            }
-        );
-
-        box.inertia = Infinity;
-        box.inverseInertia = 0;
-        Composite.add(world, box);
-        wordObjects.push({
-            dom: div,
-            body: box,
-        });
-    });
-});
 
 Render.run(render);
 const runner = Runner.create();
