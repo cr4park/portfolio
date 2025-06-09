@@ -86,7 +86,7 @@ h2 {
 }
 
 .wrapper {
-    min-width: 960px;
+    min-width: 992px;
 }
 
 .section {
@@ -101,7 +101,7 @@ h2 {
     height: 100vh;
     position: relative;
     margin: 0 auto;
-    max-width: 960px;
+    max-width: 992px;
 }
 
 .retro-background::after {
@@ -389,11 +389,9 @@ canvas {
     pointer-events: none;
 }
 
-@keyframes flash {
-    to {
-        transform: scale(1.6) translate(-50%, -50%);
-        opacity: 0;
-    }
+#preload-ground {
+  width: 100vw;
+  height: 0;
 }
 
 /* === main === */
@@ -644,7 +642,7 @@ canvas {
     flex-wrap: wrap;
     height: auto;
     gap: 40px;
-    max-width: none;
+    max-width: 2560px;
 }
 
 .section.work-list .project-list {
@@ -653,6 +651,7 @@ canvas {
     flex-direction: column;
     width: 374px;
     height: 100vh;
+    max-height: 1440px;
 }
 
 
@@ -689,6 +688,7 @@ canvas {
     justify-content: center;
     flex-direction: column;
     height: 100vh;
+    max-height: 1440px;
 }
 
 .section.work-list .project-list-col-2 .project-list {

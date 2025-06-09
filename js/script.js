@@ -45,7 +45,7 @@ new fullpage('#fullpage', {
     navigation: true,
     navigationPosition: 'right',
     onLeave: function (origin, destination, direction) {
-        if (!triggered && origin.index === 0 && direction === 'down') {
+        if (!triggered && destination.anchor === 'about') {
             triggered = true;
             triggerPhysicsLanding();
         }
@@ -109,6 +109,7 @@ const {
 
 const engine = Engine.create();
 const world = engine.world;
+engine.timing.timeScale = 1;
 engine.gravity.y = 1;
 
 const width = window.innerWidth;
