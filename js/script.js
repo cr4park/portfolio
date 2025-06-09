@@ -109,7 +109,7 @@ const {
 
 const engine = Engine.create();
 const world = engine.world;
-engine.timing.timeScale = 1;
+engine.timing.timeScale = 2;
 engine.gravity.y = 1;
 
 const width = window.innerWidth;
@@ -127,7 +127,10 @@ const render = Render.create({
 });
 
 Render.run(render);
-Runner.run(Runner.create(), engine);
+const FIXED_TIME_STEP = 1000 / 60;
+setInterval(() => {
+  Engine.update(engine, FIXED_TIME_STEP);
+}, FIXED_TIME_STEP);
 
 // 초기 착지 바닥
 const mainSection = document.querySelector(".section.main .inner");
