@@ -194,12 +194,9 @@ const render = Render.create({
     }
 });
 const FIXED_DT = 1000 / 60;
-const runner = Runner.create({
-  delta: FIXED_DT / 1.5,
-  isFixed: true
-});
-Runner.run(runner, engine);
-Render.run(render);
+setInterval(() => {
+  Engine.update(engine, FIXED_DT);
+}, FIXED_DT);
 // initial ground for 1st drop
 let ground;
 (function () {
