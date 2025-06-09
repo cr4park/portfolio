@@ -1,95 +1,138 @@
-// === 해시 제거 (새로고침 시 강제 1페이지) ===
-window.history.replaceState(null, null, window.location.pathname);
+// === Remove URL hash on page reload ===
+(() => window.history.replaceState(null, null, window.location.pathname))();
 
-// === 로딩 ===
-window.addEventListener("load", function () {
-    const loader = document.getElementById("loading-screen");
 
-    // 풀페이지 스크롤 막기
-    if (window.fullpage_api) {
-        fullpage_api.setAllowScrolling(false);
-        fullpage_api.setKeyboardScrolling(false);
+// === Mobile Overay ===
+(function () {
+    const overlay = document.getElementById('mobile-overlay');
+
+    function checkViewport() {
+        if (window.innerWidth < 767) {
+            overlay.style.display = 'flex';
+        } else {
+            overlay.style.display = 'none';
+        }
     }
+    window.addEventListener('load', checkViewport);
+    window.addEventListener('resize', checkViewport);
+})();
 
-    if (loader) {
-        setTimeout(() => {
-            loader.style.opacity = 0;
+// === Scroll Indicator ===
+(() => {
+    const indicator = document.querySelector('.scroll-indicator');
+    const hideAnchors = new Set(['main', 'about', 'contact']);
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(({
+            target,
+            isIntersecting
+        }) => {
+            const anchor = target.dataset.anchor;
+            indicator.style.display = (isIntersecting && !hideAnchors.has(anchor)) ? 'flex' : 'none';
+        });
+    }, {
+        threshold: 0.6
+    });
+    document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+})();
 
-            setTimeout(() => {
-                loader.style.display = "none";
+// === Swiper Initialization ===
+(() => {
+    document.querySelectorAll('.image-container, .review-container').forEach(container => {
+        const swiperEl = container.querySelector('.mySwiper');
+        const slideCount = swiperEl.querySelectorAll('.swiper-slide').length;
+        new Swiper(swiperEl, {
+            loop: slideCount > 2,
+            spaceBetween: 0,
+            slidesPerView: 1,
+            navigation: {
+                nextEl: container.querySelector('.swiper-button-next'),
+                prevEl: container.querySelector('.swiper-button-prev')
+            },
+            speed: 0,
+            allowTouchMove: false
+        });
+    });
+})();
 
-                // 맨 위로 이동
-                fullpage_api.moveTo(1);
+// === Pulse Random Word ===
+(() => {
+    const pulse = () => {
+        const items = document.querySelectorAll('.word');
+        if (!items.length) return;
+        const el = items[Math.floor(Math.random() * items.length)];
+        el.classList.add('word-active');
+        setTimeout(() => el.classList.remove('word-active'), 800);
+    };
+    setInterval(pulse, 2000);
+})();
 
-                words.forEach((word) => {
-                    const div = document.createElement("div");
-                    div.className = "word";
-                    div.textContent = word;
-                    skillBox.appendChild(div);
+// === Typing Effect ===
+(() => {
+    const el = document.getElementById('typing-effect');
+    const texts = ['안녕하세요.\nUI 개발자 박다나입니다.'];
+    let ti = 0,
+        ci = 0,
+        deleting = false,
+        cursorI;
 
-                    requestAnimationFrame(() => {
-                        const visualHeight = div.offsetHeight;
-                        const box = Bodies.rectangle(
-                            width / 2 + (Math.random() * 200 - 100),
-                            -Math.random() * 30 - 20,
-                            div.offsetWidth,
-                            visualHeight, {
-                                restitution: 0.8,
-                                friction: 0.2,
-                                density: 0.005,
-                                angle: Math.random() * 0.2 - 0.1,
-                            }
-                        );
+    const toggleCursor = show => {
+        if (show) {
+            cursorI = setInterval(() => el.classList.toggle('hide-cursor'), 600);
+        } else {
+            clearInterval(cursorI);
+            el.classList.remove('hide-cursor');
+        }
+    };
 
-                        box.inertia = Infinity;
-                        box.inverseInertia = 0;
-                        Composite.add(world, box);
-                        wordObjects.push({
-                            dom: div,
-                            body: box,
-                        });
+    const type = () => {
+        const text = texts[ti];
+        el.innerText = text.substring(0, ci);
+        if (!deleting && ci < text.length) {
+            ci++;
+            toggleCursor(false);
+            setTimeout(type, 100);
+        } else if (deleting && ci > 0) {
+            ci--;
+            toggleCursor(false);
+            setTimeout(type, 80);
+        } else {
+            deleting = !deleting;
+            toggleCursor(true);
+            setTimeout(type, 2500);
+        }
+    };
 
-                        if (!div.dataset.bound) {
-                            div.dataset.bound = "true";
-                            div.addEventListener("click", () => {
-                                Body.setVelocity(box, {
-                                    x: (Math.random() - 0.5) * 8,
-                                    y: -30,
-                                });
+    toggleCursor(true);
+    type();
+})();
 
-                                setTimeout(() => {
-                                    const section = div.closest('.section');
-                                    const sectionRect = section.getBoundingClientRect();
-                                    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-                                    const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+// === Project Image Backgrounds ===
+(() => {
+    document.querySelectorAll('.project-list .swiper-slide').forEach(slide => {
+        const id = slide.dataset.name;
+        const list = slide.closest('.project-list');
+        if (!id || !list) return;
+        const folder = [...list.classList].find(c => c !== 'project-list');
+        if (folder) slide.style.backgroundImage = `url('images/works/${folder}/${id}.png')`;
+    });
+})();
 
-                                    const domX = sectionRect.left + box.position.x + scrollLeft;
-                                    const domY = sectionRect.top + box.position.y + scrollTop;
+// === Glitch Letter Effects ===
+(() => {
+    const els = document.querySelectorAll('.glitch-letter');
+    const symbols = ['@', '#', '$', '%', '&', '*', '+', '?', '!', '^', '~'];
+    const randSym = () => symbols[Math.floor(Math.random() * symbols.length)];
+    setInterval(() => {
+        els.forEach(el => {
+            el.textContent = randSym();
+            el.style.animationDuration = `${(Math.random() + 0.4).toFixed(2)}s`;
+        });
+    }, 500);
+})();
 
-                                    createFirework(domX, domY);
-                                    div.remove();
-                                    Composite.remove(world, box);
-                                }, 400);
-                            });
-                        }
-                    });
-                });
-
-                // 로딩 끝나고 다시 허용
-                setTimeout(() => {
-                    document.body.classList.remove("loading");
-
-                    // 풀페이지 다시 스크롤 허용
-                    fullpage_api.setAllowScrolling(true);
-                    fullpage_api.setKeyboardScrolling(true);
-                }, 500);
-            }, 500);
-        }, 500);
-    }
-});
-
-// === 풀페이지 ===
-new fullpage('#fullpage', {
+// === Loading & fullPage.js + Secondary Landing ===
+let triggered = false;
+const fullpage_api = new fullpage('#fullpage', {
     autoScrolling: true,
     scrollHorizontally: false,
     scrollingSpeed: 700,
@@ -98,43 +141,33 @@ new fullpage('#fullpage', {
     anchors: ['main', 'about', 'works', 'work-list', 'review', 'contact'],
     navigation: true,
     navigationPosition: 'right',
-    onLeave: function (origin, destination, direction) {
-        if (!triggered && destination.anchor === 'about') {
+    onLeave: (origin, dest) => {
+        if (!triggered && dest.anchor === 'about') {
             triggered = true;
             triggerPhysicsLanding();
         }
     }
 });
-
-// === scroll indicator ===
-const scrollIndicator = document.querySelector('.scroll-indicator');
-const sections = document.querySelectorAll('.section');
-
-const hideSections = ['main', 'about', 'contact'];
-
-const observer = new IntersectionObserver(
-    (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                const sectionName = entry.target.getAttribute('data-anchor');
-
-                if (hideSections.includes(sectionName)) {
-                    scrollIndicator.style.display = 'none';
-                } else {
-                    scrollIndicator.style.display = 'flex';
-                }
-            }
-        });
-    }, {
-        threshold: 0.6, // 화면의 60% 이상 보이면 활성화된 것으로 간주
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loading-screen');
+    if (fullpage_api) {
+        fullpage_api.setAllowScrolling(false);
+        fullpage_api.setKeyboardScrolling(false);
     }
-);
+    setTimeout(() => {
+        if (loader) {
+            loader.style.opacity = 0;
+            setTimeout(() => loader.style.display = 'none', 300);
+        }
+        fullpage_api.moveTo(1);
+        fullpage_api.setAllowScrolling(true);
+        fullpage_api.setKeyboardScrolling(true);
+        dropWords();
+        document.body.classList.remove('loading');
+    }, 1000);
+});
 
-// 관찰 시작
-sections.forEach((section) => observer.observe(section));
-
-
-// === 스킬 물리엔진 ===
+// === 1Skill Physics Engine & Click Events ===
 const {
     Engine,
     Render,
@@ -144,450 +177,226 @@ const {
     Events,
     Body
 } = Matter;
-
 const engine = Engine.create();
-const world = engine.world;
 engine.timing.timeScale = 1;
-engine.gravity.y = 1;
-
-const width = window.innerWidth;
-const height = window.innerHeight;
-
+engine.gravity.y = 1.5;
+world = engine.world;
+let W = window.innerWidth,
+    H = window.innerHeight;
 const render = Render.create({
     element: document.body,
-    engine: engine,
+    engine,
     options: {
-        width,
-        height,
+        width: W,
+        height: H,
         wireframes: false,
-        background: "transparent",
-    },
+        background: 'transparent'
+    }
 });
-
-// 초기 착지 바닥
-const mainSection = document.querySelector(".section.main .inner");
-const mainY = mainSection.offsetTop + mainSection.offsetHeight + 20;
-let ground = Bodies.rectangle(width / 2, mainY, width, 40, {
-    isStatic: true,
+const runner = Runner.create({
+    delta: 1000 / 60,
+    isFixed: true
 });
-Composite.add(world, ground);
+Runner.run(runner, engine);
+// initial ground for 1st drop
+let ground;
+(function () {
+    const m = document.querySelector('.section.main .inner');
+    const y = m.offsetTop + m.offsetHeight + 20;
+    ground = Bodies.rectangle(W / 2, y, W, 40, {
+        isStatic: true
+    });
+    Composite.add(world, ground);
+})();
 
-const skillBox = document.querySelector(".skill-box");
-
-const words = [
-    "HTML",
-    "CSS",
-    "JavaScript",
-    "jQuery",
-    "SCSS",
-    "Webkit",
-    "Photoshop",
-    "XD",
-    "Zeplin",
-    "Figma",
-    "SVN",
-    "Git",
-    "Sourcetree",
-    "Github",
-    "Bitbucket",
-];
-
+const skillBox = document.querySelector('.skill-box');
+const words = ['HTML', 'CSS', 'JavaScript', 'jQuery', 'SCSS', 'Webkit', 'Photoshop', 'XD', 'Zeplin', 'Figma', 'SVN', 'Git', 'Sourcetree', 'Github', 'Bitbucket'];
 const wordObjects = [];
 
-Render.run(render);
-const runner = Runner.create();
-Runner.run(runner, engine);
-const FIXED_TIME_STEP = 1000 / 60;
-setInterval(() => {
-    Engine.update(engine, FIXED_TIME_STEP);
-}, FIXED_TIME_STEP);
-
-Events.on(engine, "afterUpdate", () => {
+function dropWords() {
+    words.forEach(text => {
+        const dom = document.createElement('div');
+        dom.className = 'word';
+        dom.textContent = text;
+        skillBox.appendChild(dom);
+        requestAnimationFrame(() => {
+            const b = Bodies.rectangle(W / 2 + (Math.random() * 200 - 100), -20 - Math.random() * 30, dom.offsetWidth, dom.offsetHeight, {
+                restitution: 0.8,
+                friction: 0.2,
+                density: 0.005,
+                angle: Math.random() * 0.2 - 0.1
+            });
+            b.inertia = Infinity;
+            b.inverseInertia = 0;
+            Composite.add(world, b);
+            wordObjects.push({
+                dom,
+                body: b
+            });
+            bindClick(dom, b);
+        });
+    });
+}
+Events.on(engine, 'afterUpdate', () => {
     wordObjects.forEach(({
         dom,
         body
     }) => {
-        dom.style.left = body.position.x - dom.offsetWidth / 2 + "px";
-        dom.style.top = body.position.y - dom.offsetHeight / 2 + "px";
-
-        let angleDeg = body.angle * (180 / Math.PI);
-        angleDeg = Math.max(-60, Math.min(60, angleDeg));
-        dom.style.transform = `rotate(${angleDeg}deg)`;
+        dom.style.left = (body.position.x - dom.offsetWidth / 2) + 'px';
+        dom.style.top = (body.position.y - dom.offsetHeight / 2) + 'px';
+        let d = body.angle * 180 / Math.PI;
+        dom.style.transform = `rotate(${Math.max(-60,Math.min(60,d))}deg)`;
+    });
+});
+Events.on(engine, 'beforeUpdate', () => {
+    wordObjects.forEach(o => {
+        const b = o.body;
+        const hw = (b.bounds.max.x - b.bounds.min.x) / 2;
+        let x = b.position.x;
+        if (x - hw < 0) x = hw;
+        if (x + hw > W) x = W - hw;
+        Body.setPosition(b, {
+            x,
+            y: b.position.y
+        });
     });
 });
 
-Events.on(engine, "beforeUpdate", () => {
-    const clampRange = width * 0.3;
-    const minX = width / 2 - clampRange;
-    const maxX = width / 2 + clampRange;
-    const minY = 0;
-    const maxY = height * 3;
-
-    wordObjects.forEach(({
-        body
-    }) => {
-        const halfW = (body.bounds.max.x - body.bounds.min.x) / 2;
-        const halfH = (body.bounds.max.y - body.bounds.min.y) / 2;
-        let x = body.position.x;
-        let y = body.position.y;
-        let clamped = false;
-
-        if (x < minX + halfW) {
-            x = minX + halfW;
-            clamped = true;
-        }
-        if (x > maxX - halfW) {
-            x = maxX - halfW;
-            clamped = true;
-        }
-        if (y < minY + halfH) {
-            y = minY + halfH;
-            clamped = true;
-        }
-        if (y > maxY - halfH) {
-            y = maxY - halfH;
-            clamped = true;
-        }
-
-        if (clamped)
-            Body.setPosition(body, {
-                x,
-                y,
-            });
+function bindClick(dom, body) {
+    if (dom.dataset.bound) return;
+    dom.dataset.bound = 'true';
+    dom.addEventListener('click', () => {
+        Body.setVelocity(body, {
+            x: (Math.random() - 0.5) * 8,
+            y: -30
+        });
+        setTimeout(() => {
+            const sec = dom.closest('.section'),
+                r = sec.getBoundingClientRect();
+            const fx = r.left + body.position.x + window.scrollX,
+                fy = r.top + body.position.y + window.scrollY;
+            createFirework(fx, fy);
+            dom.remove();
+            Composite.remove(world, body);
+        }, 400);
     });
-});
+}
 
+// === 2nd Landing Trigger ===
+function triggerPhysicsLanding() {
+    Composite.remove(world, ground);
+    const grid = document.querySelector('.word-grid');
+    const y = grid.getBoundingClientRect().top + window.scrollY + 15;
+    ground = Bodies.rectangle(W / 2, y, W * 0.95, 80, {
+        isStatic: true
+    });
+    Composite.add(world, ground);
+}
+
+// === Contact Section Fireworks ===
+let fwInt;
+(new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            if (!fwInt) fwInt = setInterval(() => {
+                const x = Math.random() * W,
+                    y = Math.random() * (H / 2);
+                createFirework(x, y);
+            }, 2000);
+        } else {
+            clearInterval(fwInt);
+            fwInt = null;
+        }
+    });
+}, {
+    threshold: 0.1
+})).observe(document.querySelector('.section.contact'));
+
+// === Create Firework ===
 function createFirework(x, y) {
+    // Explosion center at (x,y)
     const container = document.createElement("div");
     container.className = "firework-container";
-    container.style.position = "absolute";
-    container.style.left = `${x - 300}px`;
-    container.style.top = `${y - 300}px`;
-    container.style.width = "600px";
-    container.style.height = "600px";
-    container.style.pointerEvents = "none";
-    container.style.zIndex = 9999;
+    Object.assign(container.style, {
+        position: "absolute",
+        left: `${x}px`,
+        top: `${y}px`,
+        width: "0",
+        height: "0",
+        overflow: "visible",
+        pointerEvents: "none",
+        zIndex: "9999"
+    });
     document.body.appendChild(container);
-
     const particleCount = 30;
     const colors = ["#00f0b5", "#b2fff4", "#03796d"];
-
+    const maxRadius = 300; // increased radius for wider spread
     for (let i = 0; i < particleCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * maxRadius;
+        const dx = Math.cos(angle) * radius;
+        const dy = Math.sin(angle) * radius;
+        const color = colors[Math.floor(Math.random() * colors.length)];
         const particle = document.createElement("div");
         particle.className = "firework-particle";
-        const color = colors[Math.floor(Math.random() * colors.length)];
-
-        particle.style.position = "absolute";
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.width = "8px";
-        particle.style.height = "8px";
-        particle.style.background = "transparent";
-        particle.style.display = "block";
-
+        Object.assign(particle.style, {
+            position: "absolute",
+            left: "0px",
+            top: "0px",
+            width: "8px",
+            height: "8px",
+            display: "block",
+            background: "transparent"
+        });
         const directions = [{
                 top: "-8px",
-                left: "0px",
+                left: "0px"
             },
             {
                 top: "8px",
-                left: "0px",
+                left: "0px"
             },
             {
                 top: "0px",
-                left: "-8px",
+                left: "-8px"
             },
             {
                 top: "0px",
-                left: "8px",
-            },
+                left: "8px"
+            }
         ];
-
         directions.forEach(({
             top,
             left
         }) => {
             const arm = document.createElement("div");
-            arm.style.position = "absolute";
-            arm.style.width = "8px";
-            arm.style.height = "8px";
-            arm.style.background = color;
-            arm.style.top = top;
-            arm.style.left = left;
+            Object.assign(arm.style, {
+                position: "absolute",
+                width: "8px",
+                height: "8px",
+                background: color,
+                top,
+                left
+            });
             particle.appendChild(arm);
         });
-
         container.appendChild(particle);
-
         particle.animate(
             [{
-                    transform: "scale(1)",
-                    offset: 0,
+                    transform: "translate(0,0) scale(1)"
                 },
                 {
-                    transform: "scale(1.5)",
-                    offset: 0.2,
-                },
-                {
-                    transform: "scale(0.6)",
-                    offset: 0.4,
-                },
-                {
-                    transform: "scale(1.8)",
-                    offset: 0.6,
-                },
-                {
-                    transform: "scale(1)",
-                    offset: 0.8,
-                },
-                {
-                    transform: "scale(1.3)",
-                    offset: 1,
-                },
+                    transform: `translate(${dx}px, ${dy}px) scale(1)`
+                }
             ], {
-                duration: 500 + Math.random() * 300,
-                delay: Math.random() * 150,
-                easing: "steps(4, end)",
-                fill: "forwards",
+                duration: 500,
+                delay: 0,
+                easing: "steps(2)",
+                fill: "forwards"
             }
         );
     }
-    setTimeout(() => container.remove(), 400);
-}
 
-function addClickEventsOnce() {
-    wordObjects.forEach(({
-        dom,
-        body
-    }) => {
-        if (!dom.dataset.bound) {
-            dom.dataset.bound = "true";
-            dom.addEventListener("click", () => {
-                Body.setVelocity(body, {
-                    x: (Math.random() - 0.5) * 8,
-                    y: -30,
-                });
-                setTimeout(() => {
-                    const {
-                        x,
-                        y
-                    } = body.position;
-
-                    // Matter.js가 있는 섹션 DOM 기준 offset 잡기
-                    const section = dom.closest('.section');
-                    const sectionRect = section.getBoundingClientRect(); // 뷰포트 기준 위치
-                    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-                    const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-
-                    const domX = sectionRect.left + x + scrollLeft;
-                    const domY = sectionRect.top + y + scrollTop;
-
-                    createFirework(domX, domY);
-
-                    dom.remove();
-                    Composite.remove(world, body);
-                }, 400);
-
-            });
-        }
-    });
-}
-addClickEventsOnce();
-
-const aboutSection = document.querySelector(".section.about");
-let triggered = false;
-
-// 초기 스크롤 처리
-function triggerPhysicsLanding() {
-    const wordGrid = document.querySelector(".word-grid");
-    const wordGridY = wordGrid.getBoundingClientRect().top + window.scrollY;
-
-    Composite.remove(world, ground);
-    engine.gravity.y = 1;
-
-    const newGround = Bodies.rectangle(
-        width / 2,
-        wordGridY + 15,
-        width * 0.95,
-        80, {
-            isStatic: true
-        }
-    );
-    Composite.add(world, newGround);
-
-    const wallThickness = 50;
-    const padding = width * 0.2;
-    const leftWall = Bodies.rectangle(
-        width / 2 - padding,
-        wordGridY + 15,
-        wallThickness,
-        200, {
-            isStatic: true
-        }
-    );
-    const rightWall = Bodies.rectangle(
-        width / 2 + padding,
-        wordGridY + 15,
-        wallThickness,
-        200, {
-            isStatic: true
-        }
-    );
-    Composite.add(world, [leftWall, rightWall]);
-
-    render.canvas.height = wordGridY + 400;
-    addClickEventsOnce();
-}
-
-// === word 클릭 유도 ===
-function pulseRandomWord() {
-    const words = document.querySelectorAll('.word');
-    if (words.length === 0) return;
-
-    const randomIndex = Math.floor(Math.random() * words.length);
-    const chosen = words[randomIndex];
-
-    chosen.classList.add('word-active');
-
-    setTimeout(() => {
-        chosen.classList.remove('word-active');
-    }, 800); // 효과 지속 시간
-}
-
-setInterval(pulseRandomWord, 2000); // 2초마다 한 번씩 랜덤 강조
-
-// === 타이핑 효과 ===
-const textElement = document.getElementById("typing-effect");
-const texts = ["안녕하세요.\nUI 개발자 박다나입니다."];
-let textIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-let cursorVisible = true;
-let cursorInterval;
-
-function toggleCursor(show) {
-    const cursor = textElement;
-    if (show) {
-        cursorInterval = setInterval(() => {
-            cursor.classList.toggle("hide-cursor");
-        }, 600);
-    } else {
-        clearInterval(cursorInterval);
-        cursor.classList.remove("hide-cursor");
-    }
-}
-
-function type() {
-    const currentText = texts[textIndex];
-    const visibleText = currentText.substring(0, charIndex);
-    textElement.innerText = visibleText;
-
-    if (!isDeleting && charIndex < currentText.length) {
-        toggleCursor(false);
-        charIndex++;
-        setTimeout(type, 100);
-    } else if (isDeleting && charIndex > 0) {
-        toggleCursor(false);
-        charIndex--;
-        setTimeout(type, 80);
-    } else {
-        isDeleting = !isDeleting;
-        toggleCursor(true);
-        setTimeout(type, 2500);
-    }
-}
-
-type();
-toggleCursor(true);
-
-// === 프로젝트 이미지 백그라운드 자동 적용 ===
-document.querySelectorAll(".swiper-slide").forEach((el) => {
-    const id = el.dataset.name;
-    const parent = el.closest(".project-list");
-    if (id && parent) {
-        // 'project-list'를 제외한 클래스명만 추출
-        const folder = [...parent.classList].find(c => c !== "project-list");
-
-        if (folder) {
-            el.style.backgroundImage = `url('images/works/${folder}/${id}.png')`;
-        }
-    }
-});
-
-// === 글리치 문자 랜덤 생성 ===
-const glitchEls = document.querySelectorAll(".glitch-letter"); // 여러 개 선택
-
-const symbols = ["@", "#", "$", "%", "&", "*", "+", "?", "!", "^", "~"];
-
-function getRandomSymbol() {
-    return symbols[Math.floor(Math.random() * symbols.length)];
-}
-
-function setRandomFlickerSpeed(el) {
-    const speed = (Math.random() * 1 + 0.4).toFixed(2);
-    el.style.animationDuration = `${speed}s`;
-}
-
-// 각 요소에 대해 랜덤 심볼 + 속도 설정 반복
-setInterval(() => {
-    glitchEls.forEach(el => {
-        el.textContent = getRandomSymbol();
-    });
-}, 400);
-
-setInterval(() => {
-    glitchEls.forEach(el => {
-        setRandomFlickerSpeed(el);
-    });
-}, 500);
-
-// === swiper ===
-document.querySelectorAll('.image-container, .review-container').forEach((container, index) => {
-    const swiperEl = container.querySelector('.mySwiper');
-    const nextBtn = container.querySelector('.swiper-button-next');
-    const prevBtn = container.querySelector('.swiper-button-prev');
-    const slideCount = swiperEl.querySelectorAll('.swiper-slide').length;
-
-    new Swiper(swiperEl, {
-        loop: slideCount > 2,
-        spaceBetween: 0,
-        slidesPerView: 1,
-        navigation: {
-            nextEl: nextBtn,
-            prevEl: prevBtn
-        },
-        speed: 0,
-        allowTouchMove: false
-    });
-});
-
-// === 하단 폭죽 ===
-let fireworksInterval = null;
-
-const contactFireworkObserver = new IntersectionObserver(
-    (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                // 시작
-                if (!fireworksInterval) {
-                    fireworksInterval = setInterval(() => {
-                        const x = Math.random() * window.innerWidth;
-                        const y = Math.random() * (window.innerHeight / 2);
-                        createFirework(x, y);
-                    }, 2000);
-                }
-            } else {
-                // 종료
-                clearInterval(fireworksInterval);
-                fireworksInterval = null;
-            }
-        });
-    }, {
-        threshold: 0.1
-    }
-);
-
-const contactSection = document.querySelector('.section.contact');
-if (contactSection) {
-    contactFireworkObserver.observe(contactSection);
+    // remove container after effect
+    setTimeout(() => container.remove(), 1000);
 }
