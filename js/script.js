@@ -113,7 +113,7 @@
         const list = slide.closest('.project-list');
         if (!id || !list) return;
         const folder = [...list.classList].find(c => c !== 'project-list');
-        if (folder) slide.style.backgroundImage = `url('images/works/${folder}/${id}.png')`;
+        if (folder) slide.style.backgroundImage = `url('images/works/${folder}/${id}.jpg')`;
     });
 })();
 
@@ -178,7 +178,7 @@ const {
     Body
 } = Matter;
 const engine = Engine.create();
-engine.timing.timeScale = 1;
+engine.timing.timeScale = 1.5;
 engine.gravity.y = 1.5;
 world = engine.world;
 let W = window.innerWidth,
@@ -193,11 +193,10 @@ const render = Render.create({
         background: 'transparent'
     }
 });
-const runner = Runner.create({
-    delta: 1000 / 60,
-    isFixed: true
-});
-Runner.run(runner, engine);
+const FIXED_DT = 1000 / 60;
+setInterval(() => {
+  Engine.update(engine, FIXED_DT);
+}, FIXED_DT);
 // initial ground for 1st drop
 let ground;
 (function () {
@@ -309,7 +308,7 @@ let fwInt;
         }
     });
 }, {
-    threshold: 0.1
+    threshold: 0.4
 })).observe(document.querySelector('.section.contact'));
 
 // === Create Firework ===
