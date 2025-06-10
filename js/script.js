@@ -162,8 +162,8 @@ function initPhysics(first = false) {
     engine = Engine.create();
     // engine.positionIterations = 12;
     // engine.velocityIterations = 10;
-    engine.timing.timeScale = 1.5;
-    engine.gravity.y = 1.5;
+    engine.timing.timeScale = 1;
+    engine.gravity.y = 5;
     world = engine.world;
     render = Render.create({
         element: document.body,
@@ -184,25 +184,17 @@ function initPhysics(first = false) {
     // 물리 루프(고정 60fps)
     Render.run(render);
     let lastTime = performance.now();
-    const FIXED_STEP = 1000 / 50; // 16.666... ms (1/60초)
-    const MAX_STEPS = 3; // 프레임 drop 시 최대 반복 횟수 제한 (무한루프 방지)
-    engine.positionIterations = 8; // 8~10 (기본 6보다 살짝만)
-    engine.velocityIterations = 6; // 6~8
-
+    const FIXED_STEP = 1000 / 60; // 진짜 60fps
+    let accumulator = 0;
     function physicsLoop() {
         const now = performance.now();
         let delta = now - lastTime;
         lastTime = now;
-        // 최악의 경우 프레임당 너무 많이 반복 안 되게 제한
-        let steps = 0;
-        while (delta > FIXED_STEP && steps < MAX_STEPS) {
-            Engine.update(engine, FIXED_STEP * engine.timing.timeScale);
-            delta -= FIXED_STEP;
-            steps++;
-        }
-        // 남은 시간도 처리
-        if (delta > 0) {
-            Engine.update(engine, delta * engine.timing.timeScale);
+        accumulator += delta;
+        // 실제로는 여러 번 돌려서 딱 맞추는 게 좋음
+        while (accumulator >= FIXED_STEP) {
+            Engine.update(engine, FIXED_STEP);
+            accumulator -= FIXED_STEP;
         }
 
         window._physicsRAF = requestAnimationFrame(physicsLoop);
@@ -262,9 +254,9 @@ function dropWords() {
                 -20 - Math.random() * 30,
                 dom.offsetWidth,
                 dom.offsetHeight, {
-                    restitution: 0.8,
+                    restitution: 0.7,
                     friction: 0.2,
-                    frictionStatic: 1.0,
+                    frictionStatic: 0.8,
                     density: 0.05,
                     angle: Math.random() * 0.2 - 0.1,
                     inertia: Infinity,

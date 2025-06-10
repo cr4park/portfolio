@@ -722,6 +722,7 @@ h2 {
     display: flex;
     justify-content: flex-end;
     flex-direction: column;
+    text-align: center;
 }
 
 .section.work-list .image-container {
