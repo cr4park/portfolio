@@ -186,6 +186,7 @@ function initPhysics(first = false) {
     let lastTime = performance.now();
     const FIXED_STEP = 1000 / 60; // 진짜 60fps
     let accumulator = 0;
+
     function physicsLoop() {
         const now = performance.now();
         let delta = now - lastTime;
