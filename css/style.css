@@ -61,8 +61,8 @@ pre {
 
 /* === common === */
 ::selection {
-    background: #00f0b5;
     color: #000;
+    background: #00f0b5;
 }
 
 .hidden {
@@ -103,18 +103,18 @@ h1 {
 
 h2 {
     position: relative;
+    padding: 30px;
     font-family: 'Press Start 2P';
     font-size: 24px;
     text-align: center;
     color: #00f0b5;
+    letter-spacing: 5px;
+    line-height: 1.1;
     text-shadow:
         0 0 2px #00f0b5,
         0 0 5px #00f0b5,
         0 0 10px #00f0b5,
         0 0 15px #00f0b5;
-    letter-spacing: 5px;
-    line-height: 1.1;
-    padding: 30px;
 }
 
 .common-shake {
@@ -175,10 +175,10 @@ canvas {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: -1;
     content: "";
     mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
-    z-index: -1;
 }
 
 .retro-background::before {
@@ -402,46 +402,46 @@ canvas {
 
 #mobile-overlay {
     display: none;
+    width: 100vw;
+    height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #000;
-    color: #fff;
-    padding: 20px;
     z-index: 9999;
     padding: 20px;
+    padding: 20px;
+    color: #fff;
+    background: #000;
     opacity: 0.9;
 }
 
 #mobile-overlay .text-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    text-align: center;
+    align-items: center;
+    flex-direction: column;
     width: 100%;
     height: 100%;
     padding: 20px;
-    border: 2px solid #00f0b5;
+    text-align: center;
     color: #00f0b5;
+    border: 2px solid #00f0b5;
 }
 
 #mobile-overlay .text-container .text {
-    line-height: 1.4;
     margin-top: 20px;
+    line-height: 1.4;
 }
 
 /* === skii === */
 #physics-overlay {
+    width: 100%;
+    height: 100%;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
     z-index: 100;
+    pointer-events: none;
 }
 
 .word {
@@ -452,27 +452,27 @@ canvas {
     color: #00f0b5;
     border: 4px solid #00f0b5;
     border-color: #00f0b5 #03796d #03796d #00f0b5;
+    transform: translate(-50%, -50%);
     background: #000;
     border-right-width: 8px;
     border-bottom-width: 8px;
     cursor: pointer;
-    transform: translate(-50%, -50%);
 }
 
 .word:hover {
+    color: #000;
     transform: translate(2px, 2px) !important;
     background: #03796d;
     border-right-width: 6px;
     border-bottom-width: 6px;
-    color: #000;
 }
 
 .word:active,
 .word-active {
+    color: #000;
     border-width: 4px;
     transform: translate(4px, 4px) !important;
     background: #00f0b5;
-    color: #000;
 }
 
 .word-grid {
@@ -636,11 +636,11 @@ canvas {
     position: absolute;
     bottom: 0;
     left: 0;
+    border: 2px solid #00f0b5;
+    border-right: none;
+    border-left: none;
     background: #00f0b5;
     box-sizing: border-box;
-    border: 2px solid #00f0b5;
-    border-left: none;
-    border-right: none;
 }
 
 .barrier-line::before {
@@ -712,6 +712,7 @@ canvas {
     flex-direction: row;
     flex-wrap: wrap;
     height: auto;
+    padding: 0 40px;
     gap: 40px;
     max-width: 2560px;
 }
@@ -747,8 +748,8 @@ canvas {
     position: relative;
     margin: 20px 0;
     border: 1px solid #fff;
-    border-left: none;
     border-right: none;
+    border-left: none;
 }
 
 .section.work-list .description.name {
@@ -764,8 +765,8 @@ canvas {
     justify-content: center;
     flex-direction: column;
     height: 100vh;
-    max-height: 1440px;
     font-size: 24px;
+    max-height: 1440px;
 }
 
 .section.work-list .project-list-col-2 .project-list {
@@ -830,8 +831,8 @@ canvas {
 
 .swiper-button-prev:hover,
 .swiper-button-next:hover {
-    background: #00f0b5;
     color: #000;
+    background: #00f0b5;
 }
 
 .swiper-button-prev:after {
