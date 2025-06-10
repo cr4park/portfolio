@@ -1,23 +1,18 @@
-// === Remove URL hash on page reload ===
+// === URL 해시 리셋 (새로고침 시) ===
 (() => window.history.replaceState(null, null, window.location.pathname))();
 
-
-// === Mobile Overay ===
+// === 모바일 전용 오버레이 토글 ===
 (function () {
     const overlay = document.getElementById('mobile-overlay');
 
     function checkViewport() {
-        if (window.innerWidth < 767) {
-            overlay.style.display = 'flex';
-        } else {
-            overlay.style.display = 'none';
-        }
+        overlay.style.display = (window.innerWidth < 767) ? 'flex' : 'none';
     }
     window.addEventListener('load', checkViewport);
     window.addEventListener('resize', checkViewport);
 })();
 
-// === Scroll Indicator ===
+// === 스크롤 인디케이터 표시/숨김 (섹션 감지) ===
 (() => {
     const indicator = document.querySelector('.scroll-indicator');
     const hideAnchors = new Set(['main', 'about', 'contact']);
@@ -35,7 +30,7 @@
     document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
 })();
 
-// === Swiper Initialization ===
+// === Swiper 슬라이더 초기화 (프로젝트/리뷰) ===
 (() => {
     document.querySelectorAll('.image-container, .review-container').forEach(container => {
         const swiperEl = container.querySelector('.mySwiper');
@@ -54,7 +49,7 @@
     });
 })();
 
-// === Pulse Random Word ===
+// === 랜덤 단어 펄스 효과 반복 ===
 (() => {
     const pulse = () => {
         const items = document.querySelectorAll('.word');
@@ -66,7 +61,7 @@
     setInterval(pulse, 2000);
 })();
 
-// === Typing Effect ===
+// === 타이핑 이펙트 (인삿말) ===
 (() => {
     const el = document.getElementById('typing-effect');
     const texts = ['안녕하세요.\nUI 개발자 박다나입니다.'];
@@ -74,7 +69,6 @@
         ci = 0,
         deleting = false,
         cursorI;
-
     const toggleCursor = show => {
         if (show) {
             cursorI = setInterval(() => el.classList.toggle('hide-cursor'), 600);
@@ -83,7 +77,6 @@
             el.classList.remove('hide-cursor');
         }
     };
-
     const type = () => {
         const text = texts[ti];
         el.innerText = text.substring(0, ci);
@@ -101,12 +94,11 @@
             setTimeout(type, 2500);
         }
     };
-
     toggleCursor(true);
     type();
 })();
 
-// === Project Image Backgrounds ===
+// === 프로젝트 썸네일 백그라운드 지정 ===
 (() => {
     document.querySelectorAll('.project-list .swiper-slide').forEach(slide => {
         const id = slide.dataset.name;
@@ -117,7 +109,7 @@
     });
 })();
 
-// === Glitch Letter Effects ===
+// === 글리치 문자 효과 반복 ===
 (() => {
     const els = document.querySelectorAll('.glitch-letter');
     const symbols = ['@', '#', '$', '%', '&', '*', '+', '?', '!', '^', '~'];
@@ -130,103 +122,127 @@
     }, 500);
 })();
 
-// === Loading & fullPage.js + Secondary Landing ===
-let triggered = false;
-const fullpage_api = new fullpage('#fullpage', {
-    autoScrolling: true,
-    scrollHorizontally: false,
-    scrollingSpeed: 700,
-    resetSliders: true,
-    normalScrollElements: '.scrollable-section',
-    anchors: ['main', 'about', 'works', 'work-list', 'review', 'contact'],
-    navigation: true,
-    navigationPosition: 'right',
-    onLeave: (origin, dest) => {
-        if (!triggered && dest.anchor === 'about') {
-            triggered = true;
-            triggerPhysicsLanding();
-        }
-    }
-});
-window.addEventListener('load', () => {
-    const loader = document.getElementById('loading-screen');
-    if (fullpage_api) {
-        fullpage_api.setAllowScrolling(false);
-        fullpage_api.setKeyboardScrolling(false);
-    }
-    setTimeout(() => {
-        if (loader) {
-            loader.style.opacity = 0;
-            setTimeout(() => loader.style.display = 'none', 300);
-        }
-        fullpage_api.moveTo(1);
-        fullpage_api.setAllowScrolling(true);
-        fullpage_api.setKeyboardScrolling(true);
-        dropWords();
-        document.body.classList.remove('loading');
-    }, 1000);
-});
 
-// === 1Skill Physics Engine & Click Events ===
+
+// === Matter.js 물리엔진 & 풀페이지 인터랙션 ===
+// 착지 트리거(about 도달 여부)
+let triggered = false;
+
+// Matter.js 전역 (엔진/렌더러/월드/ground/크기/단어들)
 const {
     Engine,
     Render,
-    Runner,
     Bodies,
     Composite,
     Events,
     Body
 } = Matter;
-const engine = Engine.create();
-engine.timing.timeScale = 1.5;
-engine.gravity.y = 1.5;
-world = engine.world;
-let W = window.innerWidth,
-    H = window.innerHeight;
-const render = Render.create({
-    element: document.body,
-    engine,
-    options: {
-        width: W,
-        height: H,
-        wireframes: false,
-        background: 'transparent'
+let engine, render, world, ground, W, H;
+let wordObjects = [];
+
+// --- 물리엔진 전체 초기화 ---
+function initPhysics(first = false) {
+    // 이전 상태 정리
+    if (!first) {
+        if (render) Matter.Render.stop(render);
+        if (window._physicsRAF) cancelAnimationFrame(window._physicsRAF);
+        if (world) Composite.clear(world, false);
+        const skillBox = document.querySelector('.skill-box');
+        if (skillBox) skillBox.innerHTML = '';
+        wordObjects = [];
     }
-});
-const FIXED_DT = 1000 / 60;
-setInterval(() => {
-  Engine.update(engine, FIXED_DT);
-}, FIXED_DT);
-// initial ground for 1st drop
-let ground;
-(function () {
-    const m = document.querySelector('.section.main .inner');
-    const y = m.offsetTop + m.offsetHeight + 20;
-    ground = Bodies.rectangle(W / 2, y, W, 40, {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    engine = Engine.create();
+    engine.timing.timeScale = 1;
+    engine.gravity.y = 1.5;
+    world = engine.world;
+    render = Render.create({
+        element: document.body,
+        engine,
+        options: {
+            width: W,
+            height: H,
+            wireframes: false,
+            background: 'transparent'
+        }
+    });
+
+    // 1차 바닥 생성(.main)
+    createMainGround();
+    // 단어 드롭
+    dropWords();
+
+    // 물리 루프(고정 60fps)
+    Render.run(render);
+
+    function physicsLoop() {
+        Engine.update(engine, 1000 / 60);
+        window._physicsRAF = requestAnimationFrame(physicsLoop);
+    }
+    physicsLoop();
+
+    // 프레임별: DOM 위치 동기화, 화면 밖 제한
+    Events.on(engine, 'afterUpdate', syncWordDOM);
+    Events.on(engine, 'beforeUpdate', constrainWordBounds);
+}
+
+// --- 1차 바닥(.main 하단) 생성 ---
+function createMainGround() {
+    if (ground) Composite.remove(world, ground);
+    const mainSection = document.querySelector('.section.main');
+    const groundHeight = 40;
+    // 바닥 윗면을 .main 하단에 딱 맞춤
+    const y = mainSection.offsetTop + mainSection.offsetHeight + groundHeight / 2;
+    ground = Bodies.rectangle(W / 2, y, W, groundHeight, {
         isStatic: true
     });
     Composite.add(world, ground);
-})();
+}
 
-const skillBox = document.querySelector('.skill-box');
-const words = ['HTML', 'CSS', 'JavaScript', 'jQuery', 'SCSS', 'Webkit', 'Photoshop', 'XD', 'Zeplin', 'Figma', 'SVN', 'Git', 'Sourcetree', 'Github', 'Bitbucket'];
-const wordObjects = [];
+// --- 2차 바닥(.about 하단 - barrier-line) 생성 ---
+function triggerPhysicsLanding() {
+    if (ground) Composite.remove(world, ground);
+    const aboutSection = document.querySelector('.section.about');
+    const barrierLine = document.querySelector('.barrier-line');
+    const groundHeight = 80;
+    const barrierHeight = barrierLine ? barrierLine.offsetHeight : 0;
+    // 바닥 윗면을 .about 하단-barrier에 딱 맞춤
+    const y = aboutSection.offsetTop + aboutSection.offsetHeight - barrierHeight + groundHeight / 2;
+    ground = Bodies.rectangle(W / 2, y, W * 0.95, groundHeight, {
+        isStatic: true
+    });
+    Composite.add(world, ground);
+}
 
+// --- 단어 박스(.word) 물리 드롭 ---
 function dropWords() {
+    const skillBox = document.querySelector('.skill-box');
+    if (!skillBox) return;
+    const words = [
+        'HTML', 'CSS', 'JavaScript', 'jQuery', 'SCSS', 'Webkit', 'Photoshop',
+        'XD', 'Zeplin', 'Figma', 'SVN', 'Git', 'Sourcetree', 'Github', 'Bitbucket'
+    ];
+    wordObjects = [];
     words.forEach(text => {
         const dom = document.createElement('div');
         dom.className = 'word';
         dom.textContent = text;
         skillBox.appendChild(dom);
         requestAnimationFrame(() => {
-            const b = Bodies.rectangle(W / 2 + (Math.random() * 200 - 100), -20 - Math.random() * 30, dom.offsetWidth, dom.offsetHeight, {
-                restitution: 0.8,
-                friction: 0.2,
-                density: 0.005,
-                angle: Math.random() * 0.2 - 0.1
-            });
-            b.inertia = Infinity;
-            b.inverseInertia = 0;
+            const b = Bodies.rectangle(
+                W / 2 + (Math.random() * 200 - 100),
+                -20 - Math.random() * 30,
+                dom.offsetWidth,
+                dom.offsetHeight, {
+                    restitution: 0.8,
+                    friction: 0.2,
+                    density: 0.005,
+                    angle: Math.random() * 0.2 - 0.1,
+                    inertia: Infinity,
+                    inverseInertia: 0
+                }
+            );
             Composite.add(world, b);
             wordObjects.push({
                 dom,
@@ -236,18 +252,22 @@ function dropWords() {
         });
     });
 }
-Events.on(engine, 'afterUpdate', () => {
+
+// --- 매 프레임: DOM 위치 & 회전 동기화 ---
+function syncWordDOM() {
     wordObjects.forEach(({
         dom,
         body
     }) => {
         dom.style.left = (body.position.x - dom.offsetWidth / 2) + 'px';
         dom.style.top = (body.position.y - dom.offsetHeight / 2) + 'px';
-        let d = body.angle * 180 / Math.PI;
-        dom.style.transform = `rotate(${Math.max(-60,Math.min(60,d))}deg)`;
+        const deg = body.angle * 180 / Math.PI;
+        dom.style.transform = `rotate(${Math.max(-60, Math.min(60, deg))}deg)`;
     });
-});
-Events.on(engine, 'beforeUpdate', () => {
+}
+
+// --- 매 프레임: 단어 바디 화면 밖 제한 ---
+function constrainWordBounds() {
     wordObjects.forEach(o => {
         const b = o.body;
         const hw = (b.bounds.max.x - b.bounds.min.x) / 2;
@@ -259,8 +279,9 @@ Events.on(engine, 'beforeUpdate', () => {
             y: b.position.y
         });
     });
-});
+}
 
+// --- 단어 클릭: 바운스+폭죽+삭제 ---
 function bindClick(dom, body) {
     if (dom.dataset.bound) return;
     dom.dataset.bound = 'true';
@@ -281,25 +302,80 @@ function bindClick(dom, body) {
     });
 }
 
-// === 2nd Landing Trigger ===
-function triggerPhysicsLanding() {
-    Composite.remove(world, ground);
-    const grid = document.querySelector('.word-grid');
-    const y = grid.getBoundingClientRect().top + window.scrollY + 15;
-    ground = Bodies.rectangle(W / 2, y, W * 0.95, 80, {
-        isStatic: true
-    });
-    Composite.add(world, ground);
-}
+// --- fullPage.js: 페이지 이동 시 2차착지 트리거 ---
+const fullpage_api = new fullpage('#fullpage', {
+    autoScrolling: true,
+    scrollHorizontally: false,
+    scrollingSpeed: 700,
+    resetSliders: true,
+    normalScrollElements: '.scrollable-section',
+    anchors: ['main', 'about', 'works', 'work-list', 'review', 'contact'],
+    navigation: true,
+    navigationPosition: 'right',
+    onLeave: (origin, dest) => {
+        if (!triggered && dest.anchor === 'about') {
+            triggered = true;
+            triggerPhysicsLanding();
+        }
+    }
+});
 
-// === Contact Section Fireworks ===
+// --- 로딩 완료: 엔진+풀페이지+물리 초기화 ---
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loading-screen');
+    if (fullpage_api) {
+        fullpage_api.setAllowScrolling(false);
+        fullpage_api.setKeyboardScrolling(false);
+    }
+    setTimeout(() => {
+        if (loader) {
+            loader.style.opacity = 0;
+            setTimeout(() => loader.style.display = 'none', 300);
+        }
+        fullpage_api.moveTo(1);
+        fullpage_api.setAllowScrolling(true);
+        fullpage_api.setKeyboardScrolling(true);
+        initPhysics(true);
+        document.body.classList.remove('loading');
+    }, 1000);
+});
+
+// --- 창 리사이즈 시: 섹션 따라 바닥/트리거 동기화 ---
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        let currentAnchor = null;
+        try {
+            currentAnchor = fullpage_api.getActiveSection().anchor;
+        } catch (e) {}
+        initPhysics();
+        if (currentAnchor === 'main') {
+            createMainGround();
+            triggered = false;
+        } else {
+            triggerPhysicsLanding();
+            triggered = true;
+        }
+    }, 200);
+});
+
+// --- contact 섹션 진입/이탈 시 자동 폭죽 이펙트 ---
 let fwInt;
 (new IntersectionObserver(entries => {
     entries.forEach(e => {
         if (e.isIntersecting) {
             if (!fwInt) fwInt = setInterval(() => {
-                const x = Math.random() * W,
-                    y = Math.random() * (H / 2);
+                const inner = document.querySelector('.section.contact h2');
+                if (!inner) return;
+                const rect = inner.getBoundingClientRect();
+                const margin = 100;
+                const x = rect.left + window.scrollX - margin + Math.random() * (rect.width + margin * 2);
+                // y: .inner 상단 - margin ~ .inner 하단까지만
+                const minY = rect.top + window.scrollY - margin;
+                const maxY = rect.top + window.scrollY + rect.height;
+                const y = minY + Math.random() * (maxY - minY);
+
                 createFirework(x, y);
             }, 2000);
         } else {
@@ -309,79 +385,94 @@ let fwInt;
     });
 }, {
     threshold: 0.4
-})).observe(document.querySelector('.section.contact'));
+}))
+.observe(document.querySelector('.section.contact'));
 
+// --- 폭죽 파티클 생성/애니메이션 ---
 function createFirework(x, y) {
-  const container = document.createElement("div");
-  container.className = "firework-container";
-  Object.assign(container.style, {
-    position: "absolute",
-    left: `${x}px`,
-    top:  `${y}px`,
-    width:  "0",
-    height: "0",
-    overflow: "visible",
-    pointerEvents: "none",
-    zIndex: "9999"
-  });
-  document.body.appendChild(container);
-
-  const particleCount = 30;
-  const colors        = ["#00f0b5", "#b2fff4", "#03796d"];
-  const maxRadius     = 300;
-
-  for (let i = 0; i < particleCount; i++) {
-    // 1) 원형 분포 계산
-    const angle  = Math.random() * Math.PI * 2;
-    const radius = Math.random() * maxRadius;
-    const dx     = Math.cos(angle) * radius;
-    const dy     = Math.sin(angle) * radius;
-    const color  = colors[Math.floor(Math.random() * colors.length)];
-
-    // 2) 파티클 + 십자팔 생성
-    const particle = document.createElement("div");
-    particle.className = "firework-particle";
-    Object.assign(particle.style, {
-      position: "absolute",
-      left: "0px",
-      top:  "0px",
-      width:  "8px",
-      height: "8px",
-      display: "block",
-      background: "transparent"
-    });
-    [[-8,0],[8,0],[0,-8],[0,8]].forEach(([ty, tx])=>{
-      const arm = document.createElement("div");
-      Object.assign(arm.style, {
+    const container = document.createElement("div");
+    container.className = "firework-container";
+    Object.assign(container.style, {
         position: "absolute",
-        width:  "8px",
-        height: "8px",
-        background: color,
-        top:    `${ty}px`,
-        left:   `${tx}px`
-      });
-      particle.appendChild(arm);
+        left: `${x}px`,
+        top: `${y}px`,
+        width: "0",
+        height: "0",
+        overflow: "visible",
+        pointerEvents: "none",
+        zIndex: "9999"
     });
-    container.appendChild(particle);
+    document.body.appendChild(container);
 
-    // 3) 3단계+scale 애니메이션
-    particle.animate([
-      // 1단계: 중앙, 원크기 0.5
-      { transform: "translate(0,0) scale(0.5)", offset: 0   },
-      // 2단계: 약간 퍼짐, 원크기 1.2
-      { transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.2)`, offset: 0.3 },
-      // 3단계: 최종 퍼짐, 원크기 1.0
-      { transform: `translate(${dx}px, ${dy}px) scale(1)`, offset: 0.6 },
-      // 4단계: 살짝 축소
-      { transform: `translate(${dx}px, ${dy}px) scale(0.8)`, offset: 1   }
-    ], {
-      duration: 600 + Math.random() * 300, // 600~900ms
-      delay:    Math.random() * 150,       // 0~150ms
-      easing:   "steps(4, end)",
-      fill:     "forwards"
-    });
-  }
+    const particleCount = 30;
+    const colors = ["#00f0b5", "#b2fff4", "#03796d"];
+    const maxRadius = 300;
 
-  // 1초 뒤에 컨테이너 제거
-  setTimeout(() => container.remove(), 1000);
+    for (let i = 0; i < particleCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * maxRadius;
+        const dx = Math.cos(angle) * radius;
+        const dy = Math.sin(angle) * radius;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        const particle = document.createElement("div");
+        particle.className = "firework-particle";
+        Object.assign(particle.style, {
+            position: "absolute",
+            left: "0px",
+            top: "0px",
+            width: "8px",
+            height: "8px",
+            display: "block",
+            background: "transparent",
+        });
+        [
+            [-8, 0],
+            [8, 0],
+            [0, -8],
+            [0, 8]
+        ].forEach(([ty, tx]) => {
+            const arm = document.createElement("div");
+            Object.assign(arm.style, {
+                position: "absolute",
+                width: "8px",
+                height: "8px",
+                background: color,
+                top: `${ty}px`,
+                left: `${tx}px`,
+                boxShadow: `
+      0 0 2px ${color},
+      0 0 5px ${color},
+      0 0 10px ${color},
+      0 0 15px ${color}
+    `
+            });
+            particle.appendChild(arm);
+        });
+        container.appendChild(particle);
+
+        particle.animate([{
+                transform: "translate(0,0) scale(0.5)",
+                offset: 0
+            },
+            {
+                transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.2)`,
+                offset: 0.3
+            },
+            {
+                transform: `translate(${dx}px, ${dy}px) scale(1)`,
+                offset: 0.6
+            },
+            {
+                transform: `translate(${dx}px, ${dy}px) scale(0.8)`,
+                offset: 1
+            }
+        ], {
+            duration: 600 + Math.random() * 300,
+            delay: Math.random() * 150,
+            easing: "steps(4, end)",
+            fill: "forwards"
+        });
+    }
+    setTimeout(() => container.remove(), 1000);
 }
