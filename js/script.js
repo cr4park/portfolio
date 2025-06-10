@@ -160,8 +160,8 @@ function initPhysics(first = false) {
     W = window.innerWidth;
     H = window.innerHeight;
     engine = Engine.create();
-    engine.positionIterations = 12;
-    engine.velocityIterations = 10;
+    // engine.positionIterations = 12;
+    // engine.velocityIterations = 10;
     engine.timing.timeScale = 1.5;
     engine.gravity.y = 1.5;
     world = engine.world;
@@ -184,8 +184,8 @@ function initPhysics(first = false) {
     // 물리 루프(고정 60fps)
     Render.run(render);
     let lastTime = performance.now();
-    const FIXED_STEP = 1000 / 60; // 16.666... ms (1/60초)
-    const MAX_STEPS = 5; // 프레임 drop 시 최대 반복 횟수 제한 (무한루프 방지)
+    const FIXED_STEP = 1000 / 50; // 16.666... ms (1/60초)
+    const MAX_STEPS = 3; // 프레임 drop 시 최대 반복 횟수 제한 (무한루프 방지)
 
     function physicsLoop() {
         const now = performance.now();
@@ -205,7 +205,6 @@ function initPhysics(first = false) {
 
         window._physicsRAF = requestAnimationFrame(physicsLoop);
     }
-
     physicsLoop();
 
     // 프레임별: DOM 위치 동기화, 화면 밖 제한
