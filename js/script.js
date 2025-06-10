@@ -256,7 +256,7 @@ function dropWords() {
                 dom.offsetHeight, {
                     restitution: 0.7,
                     friction: 0.2,
-                    frictionStatic: 0.8,
+                    frictionStatic: 0.9,
                     density: 0.05,
                     angle: Math.random() * 0.2 - 0.1,
                     inertia: Infinity,
@@ -308,7 +308,7 @@ function bindClick(dom, body) {
     dom.addEventListener('click', () => {
         Body.setVelocity(body, {
             x: (Math.random() - 0.5) * 8,
-            y: -30
+            y: -55
         });
         setTimeout(() => {
             const sec = dom.closest('.section'),
