@@ -122,8 +122,6 @@
     }, 500);
 })();
 
-
-
 // === Matter.js 물리엔진 & 풀페이지 인터랙션 ===
 // 착지 트리거(about 도달 여부)
 let triggered = false;
@@ -142,13 +140,21 @@ let wordObjects = [];
 
 // --- 물리엔진 전체 초기화 ---
 function initPhysics(first = false) {
-    // 이전 상태 정리
+    // 기존 렌더러, 애니메이션 루프, 월드, 단어 모두 정리
     if (!first) {
         if (render) Matter.Render.stop(render);
         if (window._physicsRAF) cancelAnimationFrame(window._physicsRAF);
-        if (world) Composite.clear(world, false);
+        if (world) {
+            Composite.clear(world, false); // Matter.js body 모두 제거
+        }
+        // skillBox DOM 싹 비우기 (.word 전부)
         const skillBox = document.querySelector('.skill-box');
-        if (skillBox) skillBox.innerHTML = '';
+        if (skillBox) {
+            // 기존 남아 있는 .word div 전부 제거!
+            while (skillBox.firstChild) skillBox.removeChild(skillBox.firstChild);
+        }
+        // 혹시 남은 .word DOM이 문서 전체에 있을 경우 전체 제거 (방어적)
+        document.querySelectorAll('.word').forEach(el => el.remove());
         wordObjects = [];
     }
     W = window.innerWidth;
@@ -175,9 +181,13 @@ function initPhysics(first = false) {
 
     // 물리 루프(고정 60fps)
     Render.run(render);
-
+    let lastTime = performance.now();
     function physicsLoop() {
-        Engine.update(engine, 1000 / 60);
+        let now = performance.now();
+        let delta = now - lastTime;
+        lastTime = now;
+        // 여기서 엔진을 실제로 흐른 시간만큼 업데이트
+        Engine.update(engine, delta);
         window._physicsRAF = requestAnimationFrame(physicsLoop);
     }
     physicsLoop();
@@ -390,20 +400,44 @@ let fwInt;
 
 // --- 폭죽 파티클 생성/애니메이션 ---
 function createFirework(x, y) {
+    // 1. x, y 위치에 있는 가장 가까운 .section 찾기
+    // (클릭 이벤트는 word.closest('.section')과 동일!)
+    let section = null;
+    const sections = document.querySelectorAll('.section');
+    for (let s of sections) {
+        const rect = s.getBoundingClientRect();
+        const left = rect.left + window.scrollX;
+        const top = rect.top + window.scrollY;
+        if (x >= left && x <= left + rect.width &&
+            y >= top && y <= top + rect.height) {
+            section = s;
+            break;
+        }
+    }
+    if (!section) section = document.body;
+    section.style.position = 'relative'; // 반드시 relative!
+
+    // 2. section 내부 상대좌표로 환산
+    const rect = section.getBoundingClientRect();
+    const relX = x - rect.left - window.scrollX;
+    const relY = y - rect.top - window.scrollY;
+
+    // 3. container를 section 내부에 생성
     const container = document.createElement("div");
     container.className = "firework-container";
     Object.assign(container.style, {
         position: "absolute",
-        left: `${x}px`,
-        top: `${y}px`,
+        left: `${relX}px`,
+        top: `${relY}px`,
         width: "0",
         height: "0",
         overflow: "visible",
         pointerEvents: "none",
-        zIndex: "9999"
+        zIndex: "-1"
     });
-    document.body.appendChild(container);
+    section.appendChild(container);
 
+    // --- 이하 파티클/arms 기존 코드 그대로 ---
     const particleCount = 30;
     const colors = ["#00f0b5", "#b2fff4", "#03796d"];
     const maxRadius = 300;
