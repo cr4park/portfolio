@@ -308,7 +308,7 @@ function bindClick(dom, body) {
     dom.addEventListener('click', () => {
         Body.setVelocity(body, {
             x: (Math.random() - 0.5) * 8,
-            y: -55
+            y: -50 // 폭죽 세로 위치
         });
         setTimeout(() => {
             const sec = dom.closest('.section'),
@@ -443,7 +443,7 @@ function createFirework(x, y) {
         height: "0",
         overflow: "visible",
         pointerEvents: "none",
-        zIndex: "-1"
+        zIndex: "100"
     });
     section.appendChild(container);
 
