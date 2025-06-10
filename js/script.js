@@ -186,6 +186,8 @@ function initPhysics(first = false) {
     let lastTime = performance.now();
     const FIXED_STEP = 1000 / 50; // 16.666... ms (1/60초)
     const MAX_STEPS = 3; // 프레임 drop 시 최대 반복 횟수 제한 (무한루프 방지)
+    engine.positionIterations = 8; // 8~10 (기본 6보다 살짝만)
+    engine.velocityIterations = 6; // 6~8
 
     function physicsLoop() {
         const now = performance.now();
@@ -262,7 +264,8 @@ function dropWords() {
                 dom.offsetHeight, {
                     restitution: 0.8,
                     friction: 0.2,
-                    density: 0.005,
+                    frictionStatic: 1.0,
+                    density: 0.05,
                     angle: Math.random() * 0.2 - 0.1,
                     inertia: Infinity,
                     inverseInertia: 0
