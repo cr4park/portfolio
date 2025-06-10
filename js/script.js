@@ -160,7 +160,7 @@ function initPhysics(first = false) {
     W = window.innerWidth;
     H = window.innerHeight;
     engine = Engine.create();
-    engine.timing.timeScale = 2;
+    engine.timing.timeScale = 1.5;
     engine.gravity.y = 1.5;
     world = engine.world;
     render = Render.create({
@@ -182,14 +182,28 @@ function initPhysics(first = false) {
     // 물리 루프(고정 60fps)
     Render.run(render);
     let lastTime = performance.now();
+    const FIXED_STEP = 1000 / 60; // 16.666... ms (1/60초)
+    const MAX_STEPS = 5; // 프레임 drop 시 최대 반복 횟수 제한 (무한루프 방지)
+
     function physicsLoop() {
-        let now = performance.now();
+        const now = performance.now();
         let delta = now - lastTime;
         lastTime = now;
-        // 여기서 엔진을 실제로 흐른 시간만큼 업데이트
-        Engine.update(engine, delta);
+        // 최악의 경우 프레임당 너무 많이 반복 안 되게 제한
+        let steps = 0;
+        while (delta > FIXED_STEP && steps < MAX_STEPS) {
+            Engine.update(engine, FIXED_STEP * engine.timing.timeScale);
+            delta -= FIXED_STEP;
+            steps++;
+        }
+        // 남은 시간도 처리
+        if (delta > 0) {
+            Engine.update(engine, delta * engine.timing.timeScale);
+        }
+
         window._physicsRAF = requestAnimationFrame(physicsLoop);
     }
+
     physicsLoop();
 
     // 프레임별: DOM 위치 동기화, 화면 밖 제한
