@@ -6,7 +6,11 @@
     const overlay = document.getElementById('mobile-overlay');
 
     function checkViewport() {
-        overlay.style.display = (window.innerWidth < 767) ? 'flex' : 'none';
+        if (window.innerWidth < 768 || window.innerHeight < 900) {
+            overlay.style.display = 'flex';
+        } else {
+            overlay.style.display = 'none';
+        }
     }
     window.addEventListener('load', checkViewport);
     window.addEventListener('resize', checkViewport);
