@@ -538,15 +538,15 @@ document.addEventListener("DOMContentLoaded", function () {
         log.textContent = phrases[randomIndex];
     });
 
-    // 마손리
-    document.querySelectorAll('.review-list').forEach(function (list) {
-        const msnry = new Masonry(list, {
-            itemSelector: 'li',
-            gutter: 20,
-            fitWidth: true
+    // Masonry 약간 딜레이 후 실행
+    setTimeout(() => {
+        document.querySelectorAll('.review-list').forEach(function (list) {
+            const msnry = new Masonry(list, {
+                itemSelector: 'li',
+                gutter: 20,
+                fitWidth: true
+            });
+            msnry.layout(); // 한 번 더 강제 layout
         });
-        // Masonry 생성 직후에 강제 layout!
-        setTimeout(() => msnry.layout(), 0);
-    });
+    }, 100);
 });
-
