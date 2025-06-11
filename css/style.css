@@ -920,25 +920,24 @@ canvas {
 }
 
 .review-list li {
-    /* display: flex; */
     width: calc(25% - 15px);
-    border: 2px solid #fff;
     margin-top: 20px;
+    border: 2px solid #fff;
 }
 
 .review-list li .log {
-    /* width: 30px; */
-    text-align: center;
+    /* height: 1em; */
+    height: 36px;
     padding: 10px 0;
-    height: 1em;
-    box-sizing: content-box;
+    text-align: center;
+    /* box-sizing: content-box; */
 }
 
 .review-list li .text {
-    border-top: 1px solid #fff;
     padding: 20px;
     font-size: 13px;
     line-height: 1.6;
+    border-top: 1px solid #fff;
 }
 
 .section.review .swiper-button-prev,
