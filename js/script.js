@@ -523,9 +523,8 @@ function createFirework(x, y) {
     setTimeout(() => container.remove(), 1000);
 }
 
-// === 리뷰 ===
 document.addEventListener("DOMContentLoaded", function () {
-    // 랜덤 로그그
+    // 랜덤 로그
     const phrases = [
         "> fetching feedback",
         "> analyzing user input",
@@ -541,10 +540,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 마손리
     document.querySelectorAll('.review-list').forEach(function (list) {
-        new Masonry(list, {
+        const msnry = new Masonry(list, {
             itemSelector: 'li',
             gutter: 20,
             fitWidth: true
         });
+        // Masonry 생성 직후에 강제 layout!
+        setTimeout(() => msnry.layout(), 0);
     });
 });
+
