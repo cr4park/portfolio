@@ -216,7 +216,7 @@ canvas {
     z-index: 999;
     padding: 0 20px;
     font-family: 'Press Start 2P';
-    font-size: 12px;
+    font-size: 11px;
     color: #00f0b5;
     letter-spacing: 0.05em;
     border-bottom: 1px solid #333;
@@ -243,7 +243,7 @@ canvas {
 
 .scroll-indicator .text {
     margin-top: 20px;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 @keyframes arrow-drop {
@@ -280,7 +280,7 @@ canvas {
 #fp-nav ul::after {
     display: inline;
     font-family: 'Press Start 2P';
-    font-size: 12px;
+    font-size: 11px;
     color: #00f0b5;
     line-height: 40px;
 }
@@ -309,7 +309,7 @@ canvas {
     top: 0;
     left: 0;
     font-family: 'Press Start 2P';
-    font-size: 12px;
+    font-size: 11px;
     text-align: center;
     color: #00f0b5;
     line-height: 30px;
@@ -662,7 +662,7 @@ canvas {
     position: relative;
     z-index: 1;
     font-family: 'Press Start 2P';
-    font-size: 10px;
+    font-size: 11px;
     color: #000;
     line-height: 40px;
 }
@@ -693,7 +693,7 @@ canvas {
 
 .section.works .card .title {
     margin-bottom: 5px;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: normal;
 }
 
@@ -772,7 +772,7 @@ canvas {
     justify-content: center;
     flex-direction: column;
     height: 100vh;
-    font-size: 24px;
+    font-size: 20px;
     max-height: 1440px;
 }
 
@@ -843,17 +843,18 @@ canvas {
 }
 
 .swiper-button-prev:after {
-    content: '←';
+    content: '↑';
 }
 
 .swiper-button-next:after {
-    content: '→';
+    content: '↓';
 }
 
 .swiper-button-prev:after,
 .swiper-button-next:after {
-    font-family: 'DungGeunMo';
-    font-size: 24px;
+    font-family: 'Press Start 2P';
+    font-size: 16px;
+    transform: rotate(270deg);
 }
 
 .swiper-button-next.swiper-button-disabled,
