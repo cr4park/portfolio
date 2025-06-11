@@ -153,7 +153,7 @@ function initPhysics(first = false) {
             // 기존 남아 있는 .word div 전부 제거!
             while (skillBox.firstChild) skillBox.removeChild(skillBox.firstChild);
         }
-        // 혹시 남은 .word DOM이 문서 전체에 있을 경우 전체 제거 (방어적)
+        // 문서 전체의 남아 있는 .word 전부 삭제 (방어적 코드)
         document.querySelectorAll('.word').forEach(el => el.remove());
         wordObjects = [];
     }
@@ -293,8 +293,9 @@ function constrainWordBounds() {
         const b = o.body;
         const hw = (b.bounds.max.x - b.bounds.min.x) / 2;
         let x = b.position.x;
-        if (x - hw < 0) x = hw;
-        if (x + hw > W) x = W - hw;
+        const padding = 40;
+        if (x - hw < padding) x = padding + hw;
+        if (x + hw > W - padding) x = W - padding - hw;
         Body.setPosition(b, {
             x,
             y: b.position.y
@@ -521,3 +522,29 @@ function createFirework(x, y) {
     }
     setTimeout(() => container.remove(), 1000);
 }
+
+// === 리뷰 ===
+document.addEventListener("DOMContentLoaded", function () {
+    // 랜덤 로그그
+    const phrases = [
+        "> fetching feedback",
+        "> analyzing user input",
+        "> reviewing output",
+        "> echo from user",
+        "> replay.log()"
+    ];
+    const logs = document.querySelectorAll(".review-list li .log");
+    logs.forEach(log => {
+        const randomIndex = Math.floor(Math.random() * phrases.length);
+        log.textContent = phrases[randomIndex];
+    });
+
+    // 마손리
+    document.querySelectorAll('.review-list').forEach(function (list) {
+        new Masonry(list, {
+            itemSelector: 'li',
+            gutter: 20,
+            fitWidth: true
+        });
+    });
+});

@@ -61,8 +61,8 @@ pre {
 
 /* === common === */
 ::selection {
-    color: #000;
-    background: #00f0b5;
+    color: #000 !important;
+    background: #00f0b5 !important;
 }
 
 .hidden {
@@ -919,25 +919,26 @@ canvas {
     position: relative;
 }
 
-.review-list {
-    margin-top: 10px;
-    line-height: 1.4;
-}
-
 .review-list li {
-    display: flex;
-}
-
-.review-list li:nth-child(n+2) {
-    margin-top: 5px;
+    /* display: flex; */
+    width: calc(25% - 15px);
+    border: 2px solid #fff;
+    margin-top: 20px;
 }
 
 .review-list li .log {
-    width: 30px;
+    /* width: 30px; */
+    text-align: center;
+    padding: 10px 0;
+    height: 1em;
+    box-sizing: content-box;
 }
 
 .review-list li .text {
-    width: calc(100% - 30px);
+    border-top: 1px solid #fff;
+    padding: 20px;
+    font-size: 13px;
+    line-height: 1.6;
 }
 
 .section.review .swiper-button-prev,
@@ -959,10 +960,6 @@ canvas {
 
 .section.contact .text-container {
     margin-top: 50px;
-}
-
-.section.contact .text-container ul {
-    /* font-size: 18px; */
 }
 
 .section.contact .text-container ul li:nth-child(n+2) {
