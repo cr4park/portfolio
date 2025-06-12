@@ -751,7 +751,7 @@ canvas {
 
 .section.work-list .image-container {
     height: 60vh;
-    height: calc(100% - 76px);
+    height: calc(100% - 72px);
     position: relative;
     margin: 20px 0;
     border: 1px solid #fff;
