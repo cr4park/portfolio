@@ -244,8 +244,8 @@ function dropWords() {
     const skillBox = document.querySelector('.skill-box');
     if (!skillBox) return;
     const words = [
-        'HTML', 'CSS', 'JavaScript', 'jQuery', 'SCSS', 'Webkit', 'Photoshop',
-        'XD', 'Zeplin', 'Figma', 'SVN', 'Git', 'Sourcetree', 'Github', 'Bitbucket'
+        'HTML', 'CSS', 'JavaScript', 'jQuery', 'SCSS', 'Webkit', 'Photoshop', 'JIRA',
+        'XD', 'Zeplin', 'Figma', 'SVN', 'Git', 'Sourcetree', 'Github', 'Bitbucket', 'Confluence'
     ];
     wordObjects = [];
     words.forEach(text => {
